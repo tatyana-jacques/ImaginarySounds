@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Audio assets" />
+    <meta name="keywords" content="music, game audio, video" />
+    <meta name="author" content="Tatyana Jacques" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imaginary Sounds</title>
+    <link rel="shortcut icon" href="./Images/favicon01.png" type="image/png" />
+    <link href="./Css/style.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <header>
+
+        <img id="logo" src="./Images/logo.png">
+
+        <div class="navegator">
+            <div class="button"><a href="../UserLogin/Pages/Shared/_Layout.cshtml" title="Login">
+                    <div class="buttonText">Login</div>
+                </a></div>
+            <div class="button"><a href="cart.html" title="ShopCart">
+                    <div class="buttonText">
+                        <i class="material-icons" id="#shoppingCartCheckout">shopping_cart</i>
+                        <div id="number">1</div>
+                    </div>
+                </a></div>
+            <audio src="aurora.mp3"></audio>
+        </div>
+
+    </header>
+    <div id="space">
+
+    </div>
+    <main class="main">
+
+
+        <div class="player">
+            <h4><i class="material-icons" id="equalizer">equalizer</i> Playlist</h4>
+            <div class="card">
+                <img id="cover" />
+                <div id="audioDescription">
+                    <div class="cardContent">
+                        <h5></h5>
+                        <button class="buttonMusic">
+                            <i class="material-icons" id="#shoppingCartCheckout">shopping_cart</i>
+                        </button>
+                    </div>
+                    <div class="audioContainer">
+                        <!-- <audio controls controlsList="nofullscreen nodownload noremoteplayback noplaybackrate fooba">
+                            <audio controls
+                                controlsList="nofullscreen nodownload noremoteplayback noplaybackrate fooba"> -->
+                        <audio src="aurora.mp3"></audio>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </main>
+    <div id="space"></div>
+
+    <footer class="footer">
+        <p>All rights reserved</p>
+    </footer>
+    <script src="App.js"></script>
+</body>
+
+</html>

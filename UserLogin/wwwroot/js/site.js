@@ -1,5 +1,6 @@
 ﻿const card = document.querySelector(".card");
 
+
 var audios = [
     {
         title: "Meditative Theme",
@@ -17,11 +18,16 @@ var audios = [
         file: "./Music/crazyRace.mp3"
     },
 ];
+
 playList(audios)
+
 
 function playList(list) {
 
     list.forEach((item) => {
+        const cardContainer = document.createElement("div")
+        cardContainer.classList.add("cardContainer")
+
         const cover = document.createElement("img")
         cover.classList.add("cover")
         cover.src = item.cover
@@ -33,6 +39,7 @@ function playList(list) {
         cardContent.classList.add("cardContent")
 
         const title = document.createElement("h5")
+        title.classList.add("cardTitle")
         title.innerText = item.title
 
         const buttonMusic = document.createElement("button")
@@ -41,8 +48,6 @@ function playList(list) {
         cartIcon.classList.add("cart")
         cartIcon.src = "./Images/cart.png"
 
-        const audioContainer = document.createElement("div")
-        audioContainer.classList.add("audioContainer")
         const controlersContainer = document.createElement("div")
         controlersContainer.classList.add("controlersContainer")
         const playButton = document.createElement("button")
@@ -51,16 +56,17 @@ function playList(list) {
         const stopButton = document.createElement("button")
         stopButton.classList.add("buttonMusic")
         stopButton.innerText = "Stop"
-        card.appendChild(cover)
-        card.appendChild(audioDescription)
+
+        card.appendChild(cardContainer)
+        cardContainer.appendChild(cover)
+        cardContainer.appendChild(audioDescription)
 
         audioDescription.appendChild(cardContent)
         cardContent.appendChild(title)
         cardContent.appendChild(buttonMusic)
         buttonMusic.appendChild(cartIcon)
 
-        audioDescription.appendChild(audioContainer)
-        card.appendChild(controlersContainer)
+        audioDescription.appendChild(controlersContainer)
         controlersContainer.append(playButton)
         controlersContainer.append(stopButton)
 
@@ -80,6 +86,12 @@ function playList(list) {
     })
 
 }
+
+
+
+
+
+
 
 
 

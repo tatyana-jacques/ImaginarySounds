@@ -2,11 +2,9 @@
 
 namespace MusicBankAPI.Models
 {
-    public class Artist
+    public class ArtistViewModel
     {
-        public int Id { get; set; }
-        [MaxLength(50)]
         public string Name { get; set; }
-        public List<Song> Songs { get; set; }
+        
     }
 }

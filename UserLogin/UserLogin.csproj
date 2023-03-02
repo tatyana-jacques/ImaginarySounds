@@ -5,7 +5,12 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-UserLogin-ac2b1fd1-9f0a-45ef-9e88-9523ed537592</UserSecretsId>
+	 
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\js\playlist.js" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Update="app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true" />

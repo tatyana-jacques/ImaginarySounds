@@ -1,11 +1,32 @@
-const download = new Blob([item.file], { tipe: "audio/mpeg" })
-const href = URL.createObjectURL(download)
-const downloadButton = Object.assign(document.createElement("a"), {
-    href, style: "display:none",
-    download: "myMusic.mp3"
-})
-downloadButton.classList.add("buttonMusic")
-downloadButton.innerText = "Download"
+import cart from "./shoppingcart.js"
+const downloadArea = document.querySelector(".downloadArea")
+const car = [{
+    title: "Meditative Theme",
+    cover: "./Images/cover.png",
+    file: "./Music/anjos.mp3"
+},
+{
+    title: "Piano Theme",
+    cover: "./Images/cover.png",
+    file: "./Music/aurora.mp3"
+},
+{
+    title: "Vintage Electronic Rockabilly Theme",
+    cover: "./Images/cover.png",
+    file: "./Music/crazyRace.mp3"
+}];
 
-downloadButton.click();
-URL.revokeObjectURL(href)
+shopping(car)
+
+        function shopping(list) {
+
+            list.forEach((item) => {
+                const link = document.createElement("div")
+                link.innerHTML = `<a class="link" href = ${item.file} download > Download</a >`
+
+               downloadArea.appendChild(link)
+
+            })
+
+        }
+

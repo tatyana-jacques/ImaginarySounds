@@ -14,28 +14,6 @@
   --white: #F8F8F2;
 }
 
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus,
-.btn:active:focus,
-.btn-link.nav-link:focus,
-.form-control:focus,
-.form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
 
 body {
   display: flex;
@@ -44,15 +22,16 @@ body {
   background-color: var(--white);
   align-items: center;
   justify-content: center;
+  width: 100%;
 }
-
-
-header {
+header{
+    width:100%;
+}
+.top {
   display: flex;
-  max-height: 600px;
-  flex-direction: column;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-end;
+  justify-content:space-around;
   width: 100%;
   background-color: var(--purple);
   margin: 0;
@@ -85,7 +64,6 @@ header {
   border-radius: 20px;
   text-align: center;
 }
-
 
 .buttonText {
   display: flex;
@@ -123,7 +101,6 @@ header {
   opacity: 30%;
 }
 
-
 .player {
 
   width: 60%;
@@ -131,16 +108,27 @@ header {
   background-color: var(--light-blue);
   align-items: center;
   justify-content: center;
-  box-shadow: 10px 10px 40px 5px var(--grey);
+ 
+  padding:10px;
 }
 
 
 .card {
-  display: flex;
-  width: 100%;
-  margin: 0;
-  padding-right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 20px;
+    width: 100%;
+    padding-right: 20px;
+    box-shadow: 10px 10px 40px 0px var(--grey);
+}
 
+
+.cardContainer {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+   
 }
 
 .cover {
@@ -152,8 +140,8 @@ header {
 .audioDescription {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  width: 70%;
+  justify-content: flex-start;
+  width: 80%;
 
 }
 
@@ -161,11 +149,10 @@ header {
   display: flex;
   color: var(--white);
   min-width: 100px;
-  width: 10%;
   background-color: var(--grey);
   margin-left: 30px;
   margin-bottom: 8px;
-  padding: 10px;
+  padding: 5px;
   border-radius: 20px;
   text-align: center;
   justify-content: space-around;
@@ -177,16 +164,17 @@ button:hover {
   font-weight: bold;
 }
 
-
-
 .cardContent {
   display: flex;
   flex-wrap: wrap;
-  height: 100%;
   color: var(--grey);
   width: 100%;
   align-items: flex-end;
   justify-content: space-around;
+}
+
+.cardTitle{
+    width: 70%
 }
 
 
@@ -198,6 +186,7 @@ button:hover {
 
 .audioContainer {
   display: flex;
+  align-self:flex-end;
 
 }
 
@@ -228,9 +217,10 @@ a {
 
 footer {
   bottom: 0;
+  height: 50px;
   position: fixed;
   width: 100%;
   text-align: center;
-  background-color: var(--grey);
+  background-color: white;
   color: var(--white);
 }

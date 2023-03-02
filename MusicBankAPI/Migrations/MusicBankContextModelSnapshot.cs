@@ -74,39 +74,18 @@ namespace MusicBankAPI.Migrations
 
                     b.Property<string>("Cover")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int>("Duration")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("RegisterDate")
-                        .HasColumnType("datetime2");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<string>("StorageData")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Tag")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("Tonality")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
@@ -115,6 +94,47 @@ namespace MusicBankAPI.Migrations
                     b.HasIndex("ComposerId");
 
                     b.ToTable("Songs");
+                });
+
+            modelBuilder.Entity("MusicBankAPI.Models.SongTags", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("SongId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TagId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SongId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("SongTags");
+                });
+
+            modelBuilder.Entity("MusicBankAPI.Models.Tag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tag");
                 });
 
             modelBuilder.Entity("MusicBankAPI.Models.User", b =>
@@ -138,36 +158,49 @@ namespace MusicBankAPI.Migrations
                     b.Property<DateTime>("RegisterDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Senha")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("SongUser", b =>
+            modelBuilder.Entity("MusicBankAPI.Models.UserSongs", b =>
                 {
-                    b.Property<int>("LicensesId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("UserLibraryId")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("SongId")
                         .HasColumnType("int");
 
-                    b.HasKey("LicensesId", "UserLibraryId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("UserLibraryId");
+                    b.HasKey("Id");
 
-                    b.ToTable("SongUser");
+                    b.HasIndex("SongId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserSongs");
                 });
 
             modelBuilder.Entity("MusicBankAPI.Models.Song", b =>
                 {
                     b.HasOne("MusicBankAPI.Models.Artist", "Artist")
-                        .WithMany("Songs")
+                        .WithMany()
                         .HasForeignKey("ArtistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MusicBankAPI.Models.Composer", "Composer")
-                        .WithMany("Songs")
+                        .WithMany()
                         .HasForeignKey("ComposerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -177,29 +210,42 @@ namespace MusicBankAPI.Migrations
                     b.Navigation("Composer");
                 });
 
-            modelBuilder.Entity("SongUser", b =>
+            modelBuilder.Entity("MusicBankAPI.Models.SongTags", b =>
                 {
-                    b.HasOne("MusicBankAPI.Models.User", null)
+                    b.HasOne("MusicBankAPI.Models.Song", "Song")
                         .WithMany()
-                        .HasForeignKey("LicensesId")
+                        .HasForeignKey("SongId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MusicBankAPI.Models.Song", null)
+                    b.HasOne("MusicBankAPI.Models.Tag", "Tag")
                         .WithMany()
-                        .HasForeignKey("UserLibraryId")
+                        .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Song");
+
+                    b.Navigation("Tag");
                 });
 
-            modelBuilder.Entity("MusicBankAPI.Models.Artist", b =>
+            modelBuilder.Entity("MusicBankAPI.Models.UserSongs", b =>
                 {
-                    b.Navigation("Songs");
-                });
+                    b.HasOne("MusicBankAPI.Models.Song", "Song")
+                        .WithMany()
+                        .HasForeignKey("SongId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-            modelBuilder.Entity("MusicBankAPI.Models.Composer", b =>
-                {
-                    b.Navigation("Songs");
+                    b.HasOne("MusicBankAPI.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Song");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

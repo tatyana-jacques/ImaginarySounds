@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Imaginary Sounds</title>
     <link rel="shortcut icon" href="./Images/favicon01.png" type="image/png" />
-    <link href="./Css/style.css" rel="stylesheet">
+    <link href="./wwwroot/css/site.css" rel="stylesheet">
 
 </head>
 
@@ -18,57 +18,50 @@
 
     <header>
 
-        <img id="logo" src="./Images/logo.png">
+        <img id="logo" src="./wwwroot/Images/logo.png">
 
         <div class="navegator">
-            <div class="button"><a href="../UserLogin/Pages/Shared/_Layout.cshtml" title="Login">
-                    <div class="buttonText">Login</div>
-                </a></div>
-            <div class="button"><a href="cart.html" title="ShopCart">
-                    <div class="buttonText">
-                        <i class="material-icons" id="#shoppingCartCheckout">shopping_cart</i>
-                        <div id="number">1</div>
-                    </div>
-                </a></div>
-            <audio src="aurora.mp3"></audio>
+
+
+            <button class="buttonMenu" id="redirect">
+                <img class="cart" src="wwwroot/Images/cart.png">
+                <div id="number">1</div>
+            </button>
+
+            <a href="./cart.html" title="Login">
+                <button class="buttonMenu">
+
+                    <div>Login</div>
+
+                </button>
+            </a>
+
         </div>
 
     </header>
-    <div id="space">
+    <div id="space"></div>
 
-    </div>
     <main class="main">
-
-
         <div class="player">
             <h4><i class="material-icons" id="equalizer">equalizer</i> Playlist</h4>
+
+
             <div class="card">
-                <img id="cover" />
-                <div id="audioDescription">
-                    <div class="cardContent">
-                        <h5></h5>
-                        <button class="buttonMusic">
-                            <i class="material-icons" id="#shoppingCartCheckout">shopping_cart</i>
-                        </button>
-                    </div>
-                    <div class="audioContainer">
-                        <!-- <audio controls controlsList="nofullscreen nodownload noremoteplayback noplaybackrate fooba">
-                            <audio controls
-                                controlsList="nofullscreen nodownload noremoteplayback noplaybackrate fooba"> -->
-                        <audio src="aurora.mp3"></audio>
-                    </div>
-                </div>
+
             </div>
+            <audio></audio>
+
         </div>
 
 
+        </div>
+
     </main>
-    <div id="space"></div>
 
     <footer class="footer">
         <p>All rights reserved</p>
     </footer>
-    <script src="App.js"></script>
+    <script src="./wwwroot/js/site.js" type="module"></script>
 </body>
 
 </html>

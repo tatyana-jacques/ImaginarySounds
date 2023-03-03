@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicBankAPI.Context;
 using MusicBankAPI.Models;
+using MusicBankAPI.ViewModels;
+using AutoMapper;
 
 namespace MusicBankAPI.Controllers
 {
@@ -15,32 +13,44 @@ namespace MusicBankAPI.Controllers
     public class UserSongsController : ControllerBase
     {
         private readonly MusicBankContext _context;
+        private readonly IMapper _mapper;
 
-        public UserSongsController(MusicBankContext context)
+        public UserSongsController(MusicBankContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        // GET: api/UserSongs
+        
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserSongsViewModel>>> GetUserSongs()
+        public async Task<ActionResult<IEnumerable<UserSongs>>> GetUserSongs()
         {
           if (_context.UserSongs == null)
           {
               return NotFound();
           }
-            return await _context.UserSongs.ToListAsync();
+            return await _context.UserSongs
+                .Include(x => x.User)
+                .Include(x => x.Song)
+                .Include(x => x.Song.Artist)
+                .Include(x => x.Song.Composer)
+                .ToListAsync();
         }
 
-        // GET: api/UserSongs/5
+        
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserSongsViewModel>> GetUserSongs(int id)
+        public async Task<ActionResult<UserSongs>> GetUserSongs(int id)
         {
           if (_context.UserSongs == null)
           {
               return NotFound();
           }
-            var userSongs = await _context.UserSongs.FindAsync(id);
+            var userSongs = await _context.UserSongs
+                .Include(x => x.User)
+                .Include(x => x.Song)
+                .Include(x => x.Song.Artist)
+                .Include(x => x.Song.Composer)
+                .Where(y => y.Id == id).FirstOrDefaultAsync();
 
             if (userSongs == null)
             {
@@ -50,53 +60,75 @@ namespace MusicBankAPI.Controllers
             return userSongs;
         }
 
-        // PUT: api/UserSongs/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+       
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUserSongs(int id, UserSongsViewModel userSongs)
+        public async Task<ActionResult<UserSongsViewModel>> PutUserSongs(int id, UserSongsViewModel userSongViewModel)
         {
-            if (id != userSongs.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(userSongs).State = EntityState.Modified;
-
             try
             {
+
+                var userSongsList = await _context.UserSongs.ToListAsync();
+                UserSongs userSong = userSongsList.Where(y => y.Id == id).FirstOrDefault();
+                if (userSong is null)
+                {
+                    return NotFound("This user does not own this asset."); ;
+                }
+                foreach (var x in userSongsList)
+                {
+                    if (x.SongId == userSongViewModel.SongId && x.UserId == userSongViewModel.UserId)
+                    {
+                        return Conflict("This register already exists!");
+                    }
+                }
+                userSong.SongId = userSongViewModel.SongId;
+                userSong.UserId = userSongViewModel.UserId;
+
+
+                _context.Entry(userSong).State = EntityState.Modified;
+                _context.UserSongs.Update(userSong);
                 await _context.SaveChangesAsync();
+
+                return userSongViewModel;
             }
-            catch (DbUpdateConcurrencyException)
+            catch
             {
-                if (!UserSongsExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest("Problem!");
             }
 
-            return NoContent();
         }
 
-        // POST: api/UserSongs
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        
         [HttpPost]
-        public async Task<ActionResult<UserSongsViewModel>> PostUserSongs(UserSongsViewModel userSongs)
+        public async Task<ActionResult<UserSongsViewModel>> PostUserSongs(UserSongsViewModel userSongViewModel)
         {
-          if (_context.UserSongs == null)
-          {
-              return Problem("Entity set 'MusicBankContext.UserSongs'  is null.");
-          }
-            _context.UserSongs.Add(userSongs);
-            await _context.SaveChangesAsync();
+            try
+            {
+                UserSongs userSong = _mapper.Map<UserSongs>(userSongViewModel);
+                var userSongList = await _context.UserSongs.ToListAsync();
 
-            return CreatedAtAction("GetUserSongs", new { id = userSongs.Id }, userSongs);
+
+                foreach (var x in userSongList)
+                {
+                    if (x.SongId == userSongViewModel.SongId && x.UserId == userSongViewModel.UserId)
+                    {
+                        return Conflict("This register already exists!");
+                    }
+                }
+
+                _context.UserSongs.Add(userSong);
+                await _context.SaveChangesAsync();
+
+                return Ok(userSongViewModel);
+
+            }
+
+            catch
+            {
+                return BadRequest("Invalid data.");
+            }
         }
 
-        // DELETE: api/UserSongs/5
+        
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserSongs(int id)
         {
@@ -116,9 +148,5 @@ namespace MusicBankAPI.Controllers
             return NoContent();
         }
 
-        private bool UserSongsExists(int id)
-        {
-            return (_context.UserSongs?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
     }
 }

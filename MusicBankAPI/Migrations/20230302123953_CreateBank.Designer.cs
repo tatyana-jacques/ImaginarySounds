@@ -12,8 +12,8 @@ using MusicBankAPI.Context;
 namespace MusicBankAPI.Migrations
 {
     [DbContext(typeof(MusicBankContext))]
-    [Migration("20230302003346_SegondCharge")]
-    partial class SegondCharge
+    [Migration("20230302123953_CreateBank")]
+    partial class CreateBank
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -79,6 +79,9 @@ namespace MusicBankAPI.Migrations
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTime>("RegisterDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("StorageData")
                         .IsRequired()

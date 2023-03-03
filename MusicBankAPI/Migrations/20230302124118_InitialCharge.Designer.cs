@@ -12,7 +12,7 @@ using MusicBankAPI.Context;
 namespace MusicBankAPI.Migrations
 {
     [DbContext(typeof(MusicBankContext))]
-    [Migration("20230302002609_InitialCharge")]
+    [Migration("20230302124118_InitialCharge")]
     partial class InitialCharge
     {
         /// <inheritdoc />
@@ -79,6 +79,9 @@ namespace MusicBankAPI.Migrations
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTime>("RegisterDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("StorageData")
                         .IsRequired()

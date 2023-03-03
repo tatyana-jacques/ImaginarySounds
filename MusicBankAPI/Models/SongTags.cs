@@ -9,7 +9,7 @@ namespace MusicBankAPI.Models
         public int SongId { get; set; }
         [ForeignKey("IdSong")]
         public int TagId { get; set; }
-        public SongViewModel Song { get; set; }
-        public TagViewModel Tag { get; set; }
+        public Song Song { get; set; }
+        public Tag Tag { get; set; }
     }
 }

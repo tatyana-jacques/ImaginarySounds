@@ -77,6 +77,9 @@ namespace MusicBankAPI.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
+                    b.Property<DateTime>("RegisterDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("StorageData")
                         .IsRequired()
                         .HasMaxLength(150)

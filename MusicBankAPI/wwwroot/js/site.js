@@ -1,35 +1,53 @@
-﻿import cart from "./shoppingcart.js"
-
-
+﻿let cart = []
 const card = document.querySelector(".card");
-const redirect = document.querySelector("#redirect")
-redirect.addEventListener("click", () => {
+
+const redirectCart = document.querySelector("#redirectCart")
+redirectCart.addEventListener("click", () => {
     const cartString = JSON.stringify(cart)
     localStorage.setItem("cart", cartString)
     window.location.href = "./cart.html"
 
 })
 
+const redirectLogin = document.querySelector("#redirectLogin")
+redirectLogin.addEventListener("click", () => {
+    const cartString = JSON.stringify(cart)
+    localStorage.setItem("cart", cartString)
+    window.location.href = "./login.html"
 
-var audios = [
-    {
-        title: "Meditative Theme",
-        cover: "./wwwroot/Images/cover.png",
-        file: "./wwwroot/Music/anjos.mp3"
-    },
-    {
-        title: "Piano Theme",
-        cover: "./wwwroot/Images/cover.png",
-        file: "./wwwroot/Music/aurora.mp3"
-    },
-    {
-        title: "Vintage Electronic Rockabilly Theme",
-        cover: "./wwwroot/Images/cover.png",
-        file: "./wwwroot/Music/crazyRace.mp3"
-    },
-];
+})
+// const redirectLibrary = document.querySelector("#redirectLibrary")
+// redirectLibrary.addEventListener("click", () => {
+//     const libraryString = JSON.stringify(library)
+//     localStorage.setItem("library", libraryString)
+//     window.location.href = "./library.html"
 
-playList(audios)
+// })
+
+
+function GetAudios() {
+    fetch("http://localhost:5276/api/Songs")
+        .then(e => e.json())
+        .then(data => {
+            const list = data.map(item => {
+                return {
+                    id: item.id,
+                    title: item.title,
+                    file: item.storageData,
+                    cover: item.cover,
+                    composerId: item.composerId,
+                    artistId: item.artistId
+                }
+            })
+            playList(list)
+        })
+        .catch(error => {
+            alert(error)
+        })
+}
+
+GetAudios()
+
 
 
 function playList(list) {

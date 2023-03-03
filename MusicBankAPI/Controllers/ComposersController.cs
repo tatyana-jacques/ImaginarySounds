@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicBankAPI.Context;
 using MusicBankAPI.Models;
+using MusicBankAPI.ViewModels;
+using AutoMapper;
 
 namespace MusicBankAPI.Controllers
 {
@@ -15,15 +12,17 @@ namespace MusicBankAPI.Controllers
     public class ComposersController : ControllerBase
     {
         private readonly MusicBankContext _context;
+        private readonly IMapper _mapper;
 
-        public ComposersController(MusicBankContext context)
+        public ComposersController(MusicBankContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        // GET: api/Composers
+       
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ComposerViewModel>>> GetComposers()
+        public async Task<ActionResult<IEnumerable<Composer>>> GetComposers()
         {
           if (_context.Composers == null)
           {
@@ -32,9 +31,9 @@ namespace MusicBankAPI.Controllers
             return await _context.Composers.ToListAsync();
         }
 
-        // GET: api/Composers/5
+        
         [HttpGet("{id}")]
-        public async Task<ActionResult<ComposerViewModel>> GetComposer(int id)
+        public async Task<ActionResult<Composer>> GetComposer(int id)
         {
           if (_context.Composers == null)
           {
@@ -50,50 +49,57 @@ namespace MusicBankAPI.Controllers
             return composer;
         }
 
-        // PUT: api/Composers/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutComposer(int id, ComposerViewModel composer)
+        public async Task<ActionResult<Composer>> PutComposer(int id, ComposerViewModel composerViewModel)
         {
-            if (id != composer.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(composer).State = EntityState.Modified;
 
             try
             {
+                Composer composer = await _context.Composers.FindAsync(id);
+                if (composer is null)
+                {
+                    return NotFound("Composer not found."); ;
+                }
+                composer.Name = composerViewModel.Name;
+                _context.Entry(composer).State = EntityState.Modified;
+                _context.Composers.Update(composer);
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ComposerExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return NoContent();
+                return composer;
+            }
+            catch
+            {
+                return BadRequest("Problem!");
+            }
         }
 
-        // POST: api/Composers
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+      
         [HttpPost]
-        public async Task<ActionResult<ComposerViewModel>> PostComposer(ComposerViewModel composer)
+        public async Task<ActionResult<Composer>> PostComposer(ComposerViewModel composerViewModel)
         {
-          if (_context.Composers == null)
-          {
-              return Problem("Entity set 'MusicBankContext.Composers'  is null.");
-          }
-            _context.Composers.Add(composer);
-            await _context.SaveChangesAsync();
+            try
+            {
+                Composer composer = _mapper.Map<Composer>(composerViewModel);
+                var composersList = await _context.Composers.ToListAsync();
 
-            return CreatedAtAction("GetComposer", new { id = composer.Id }, composer);
+                var result = composersList.Where(x => x.Name == composerViewModel.Name).FirstOrDefault();
+                if (result is not null)
+                {
+                    return Conflict("Already registered composer!");
+                }
+
+                _context.Composers.Add(composer);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetComposer", new { id = composer.Id }, composer);
+
+            }
+
+            catch
+            {
+                return BadRequest("Invalid data.");
+            }
         }
 
         // DELETE: api/Composers/5
@@ -116,9 +122,5 @@ namespace MusicBankAPI.Controllers
             return NoContent();
         }
 
-        private bool ComposerExists(int id)
-        {
-            return (_context.Composers?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
     }
 }

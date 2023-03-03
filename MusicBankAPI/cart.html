@@ -15,16 +15,35 @@
 </head>
 
 <body>
-    <header>
 
+    <header>
         <img id="logo" src="./wwwroot/Images/logo.png">
 
+        <div class="navegator">
+
+            <button class="buttonMenu" id="redirect">
+                <div id="number">Home</div>
+            </button>
+            <button class="buttonMenu" id="redirect">
+                <div id="number">Library</div>
+            </button>
+
+        </div>
     </header>
-    <main>
+    <div id="space"></div>
 
-        <div class="downloadArea"></div>
-
+    <main class="main">
+        <div class="player">
+            <h4>Your Cart</h4>
+            <div class="card"></div>
+        </div>
+        <audio></audio>
+        </div>
+        <button class="add">Add to library</button>
     </main>
+    <footer class="footer">
+        <p>All rights reserved</p>
+    </footer>
     <script src="./wwwroot/js/cart.js" type="module"></script>
 
 </body>

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicBankAPI.Context;
 using MusicBankAPI.Models;
+using MusicBankAPI.ViewModels;
+using AutoMapper;
 
 namespace MusicBankAPI.Controllers
 {
@@ -15,32 +13,44 @@ namespace MusicBankAPI.Controllers
     public class SongTagsController : ControllerBase
     {
         private readonly MusicBankContext _context;
+        private readonly IMapper _mapper;
 
-        public SongTagsController(MusicBankContext context)
+        public SongTagsController(MusicBankContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        // GET: api/SongTags
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SongTags>>> GetSongTags()
         {
-          if (_context.SongTags == null)
-          {
-              return NotFound();
-          }
-            return await _context.SongTags.ToListAsync();
+            if (_context.SongTags == null)
+            {
+                return NotFound();
+            }
+            return await _context.SongTags
+                .Include(x => x.Tag)
+                .Include(x => x.Song)
+                .Include(x => x.Song.Artist)
+                .Include(x => x.Song.Composer)
+                .ToListAsync();
         }
 
-        // GET: api/SongTags/5
+        
         [HttpGet("{id}")]
         public async Task<ActionResult<SongTags>> GetSongTags(int id)
         {
-          if (_context.SongTags == null)
-          {
-              return NotFound();
-          }
-            var songTags = await _context.SongTags.FindAsync(id);
+            if (_context.SongTags == null)
+            {
+                return NotFound();
+            }
+            var songTags = await _context.SongTags
+                .Include(x => x.Tag)
+                .Include(x => x.Song)
+                .Include(x => x.Song.Artist )
+                .Include(x=>x.Song.Composer)
+                .Where(y => y.Id == id).FirstOrDefaultAsync();
 
             if (songTags == null)
             {
@@ -50,53 +60,75 @@ namespace MusicBankAPI.Controllers
             return songTags;
         }
 
-        // PUT: api/SongTags/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSongTags(int id, SongTags songTags)
+        public async Task<ActionResult<SongTagsViewModel>> PutSongTags(int id, SongTagsViewModel songTagsViewModel)
         {
-            if (id != songTags.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(songTags).State = EntityState.Modified;
-
             try
             {
+
+                var songTagsList = await _context.SongTags.ToListAsync();
+                SongTags songTag = songTagsList.Where(y => y.Id == id).FirstOrDefault();
+                if (songTag is null)
+                {
+                    return NotFound("Register not found."); ;
+                }
+                foreach (var x in songTagsList)
+                {
+                    if (x.SongId == songTagsViewModel.SongId && x.TagId == songTagsViewModel.TagId)
+                    {
+                        return Conflict("This register already exists!");
+                    }
+                }
+                songTag.SongId = songTagsViewModel.SongId;
+                songTag.TagId = songTagsViewModel.TagId;
+               
+
+                _context.Entry(songTag).State = EntityState.Modified;
+                _context.SongTags.Update(songTag);
                 await _context.SaveChangesAsync();
+
+                return songTagsViewModel;
             }
-            catch (DbUpdateConcurrencyException)
+            catch
             {
-                if (!SongTagsExists(id))
+                return BadRequest("Problem!");
+            }
+        }
+
+       
+        [HttpPost]
+        public async Task<ActionResult<SongTagsViewModel>> PostSongTags(SongTagsViewModel songTagsViewModel)
+        {
+            try
+            {
+                SongTags songTag = _mapper.Map<SongTags>(songTagsViewModel);
+                var songTagsList = await _context.SongTags.ToListAsync();
+
+
+                foreach (var x in songTagsList)
                 {
-                    return NotFound();
+                    if (x.SongId == songTagsViewModel.SongId && x.TagId == songTagsViewModel.TagId)
+                    {
+                        return Conflict("This register already exists!");
+                    }
                 }
-                else
-                {
-                    throw;
-                }
+
+                _context.SongTags.Add(songTag);
+                await _context.SaveChangesAsync();
+
+                return Ok(songTagsViewModel);
+
             }
 
-            return NoContent();
+            catch
+            {
+                return BadRequest("Invalid data.");
+            }
         }
+    
 
-        // POST: api/SongTags
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<SongTags>> PostSongTags(SongTags songTags)
-        {
-          if (_context.SongTags == null)
-          {
-              return Problem("Entity set 'MusicBankContext.SongTags'  is null.");
-          }
-            _context.SongTags.Add(songTags);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetSongTags", new { id = songTags.Id }, songTags);
-        }
-
-        // DELETE: api/SongTags/5
+        
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSongTags(int id)
         {
@@ -116,9 +148,6 @@ namespace MusicBankAPI.Controllers
             return NoContent();
         }
 
-        private bool SongTagsExists(int id)
-        {
-            return (_context.SongTags?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+       
     }
 }

@@ -75,6 +75,7 @@ namespace MusicBankAPI.Migrations
                     Title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     StorageData = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     Cover = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    RegisterDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ComposerId = table.Column<int>(type: "int", nullable: false),
                     ArtistId = table.Column<int>(type: "int", nullable: false)
                 },

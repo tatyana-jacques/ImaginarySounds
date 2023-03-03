@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicBankAPI.Context;
 using MusicBankAPI.Models;
+using AutoMapper;
+using MusicBankAPI.ViewModels;
 
 namespace MusicBankAPI.Controllers
 {
@@ -15,32 +12,40 @@ namespace MusicBankAPI.Controllers
     public class SongsController : ControllerBase
     {
         private readonly MusicBankContext _context;
+        private readonly IMapper _mapper;
 
-        public SongsController(MusicBankContext context)
+        public SongsController(MusicBankContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        // GET: api/Songs
+        
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SongViewModel>>> GetSongs()
+        public async Task<ActionResult<IEnumerable<Song>>> GetSongs()
         {
           if (_context.Songs == null)
           {
               return NotFound();
           }
-            return await _context.Songs.ToListAsync();
+            return await _context.Songs
+                .Include(x => x.Artist)
+                .Include(x => x.Composer)
+                .ToListAsync();
         }
 
-        // GET: api/Songs/5
+        
         [HttpGet("{id}")]
-        public async Task<ActionResult<SongViewModel>> GetSong(int id)
+        public async Task<ActionResult<Song>> GetSong(int id)
         {
           if (_context.Songs == null)
           {
               return NotFound();
           }
-            var song = await _context.Songs.FindAsync(id);
+            var song = await _context.Songs
+                .Include(x => x.Artist)
+                .Include(x => x.Composer)
+                .Where(y => y.Id == id).FirstOrDefaultAsync();
 
             if (song == null)
             {
@@ -50,53 +55,76 @@ namespace MusicBankAPI.Controllers
             return song;
         }
 
-        // PUT: api/Songs/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSong(int id, SongViewModel song)
+        public async Task<ActionResult<SongViewModel>> PutSong(int id, SongViewModel songViewModel)
         {
-            if (id != song.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(song).State = EntityState.Modified;
-
             try
             {
+
+                var songsList = await _context.Songs.ToListAsync();
+                Song song = songsList.Where(y => y.Id == id).FirstOrDefault();
+                if (song is null)
+                {
+                    return NotFound("Song not found."); ;
+                }
+                foreach (var x in songsList)
+                {
+                    if (x.Title == songViewModel.Title && x.ArtistId == songViewModel.ArtistId)
+                    {
+                        return Conflict("This artist already has a song with the same name!");
+                    }
+                }
+                song.Title = songViewModel.Title;
+                song.ArtistId = songViewModel.ArtistId;
+                song.ComposerId = songViewModel.ComposerId;
+                song.StorageData = songViewModel.StorageData;
+                song.Cover = songViewModel.Cover;
+
+                _context.Entry(song).State = EntityState.Modified;
+                _context.Songs.Update(song);
                 await _context.SaveChangesAsync();
+
+                return songViewModel;
             }
-            catch (DbUpdateConcurrencyException)
+            catch
             {
-                if (!SongExists(id))
+                return BadRequest("Problem!");
+            }
+        }
+
+        
+        [HttpPost]
+        public async Task<ActionResult<SongViewModel>> PostSong(SongViewModel songViewModel)
+        {
+            try
+            {
+                Song song = _mapper.Map<Song>(songViewModel);
+                var songsList = await _context.Songs.ToListAsync();
+
+                
+                foreach (var x in songsList)
                 {
-                    return NotFound();
+                    if (x.Title == songViewModel.Title && x.ArtistId==songViewModel.ArtistId)
+                    {
+                        return Conflict("Already registered song!");
+                    }
                 }
-                else
-                {
-                    throw;
-                }
+
+                _context.Songs.Add(song);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetSong", new { id = song.Id }, songViewModel);
+
             }
 
-            return NoContent();
+            catch
+            {
+                return BadRequest("Invalid data.");
+            }
         }
 
-        // POST: api/Songs
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<SongViewModel>> PostSong(SongViewModel song)
-        {
-          if (_context.Songs == null)
-          {
-              return Problem("Entity set 'MusicBankContext.Songs'  is null.");
-          }
-            _context.Songs.Add(song);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetSong", new { id = song.Id }, song);
-        }
-
-        // DELETE: api/Songs/5
+        
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSong(int id)
         {
@@ -116,9 +144,6 @@ namespace MusicBankAPI.Controllers
             return NoContent();
         }
 
-        private bool SongExists(int id)
-        {
-            return (_context.Songs?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+        
     }
 }

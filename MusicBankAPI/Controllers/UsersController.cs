@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicBankAPI.Context;
 using MusicBankAPI.Models;
+using AutoMapper;
+using MusicBankAPI.ViewModels;
 
 namespace MusicBankAPI.Controllers
 {
@@ -15,15 +12,16 @@ namespace MusicBankAPI.Controllers
     public class UsersController : ControllerBase
     {
         private readonly MusicBankContext _context;
+        private readonly IMapper _mapper;
 
-        public UsersController(MusicBankContext context)
+        public UsersController(MusicBankContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;   
         }
 
-        // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserViewModel>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
           if (_context.Users == null)
           {
@@ -32,9 +30,8 @@ namespace MusicBankAPI.Controllers
             return await _context.Users.ToListAsync();
         }
 
-        // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserViewModel>> GetUser(int id)
+        public async Task<ActionResult<User>> GetUser(int id)
         {
           if (_context.Users == null)
           {
@@ -50,53 +47,59 @@ namespace MusicBankAPI.Controllers
             return user;
         }
 
-        // PUT: api/Users/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, UserViewModel user)
+        public async Task<ActionResult<User>> PutUser(int id, UserViewModel userViewModel)
         {
-            if (id != user.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(user).State = EntityState.Modified;
-
             try
             {
+                User user = await _context.Users.FindAsync(id);
+                if (user is null)
+                {
+                    return NotFound("User not found."); ;
+                }
+                user.Name = userViewModel.Name;
+                _context.Entry(user).State = EntityState.Modified;
+                _context.Users.Update(user);
                 await _context.SaveChangesAsync();
+
+                return user;
             }
-            catch (DbUpdateConcurrencyException)
+            catch
             {
-                if (!UserExists(id))
+                return BadRequest("Problem!");
+            }
+        }
+
+        
+        [HttpPost]
+        public async Task<ActionResult<User>> PostUser(UserViewModel userViewModel)
+        {
+            try
+            {
+                User user = _mapper.Map<User>(userViewModel);
+                var usersList = await _context.Users.ToListAsync();
+
+                var result = usersList.Where(x => x.Name == userViewModel.Name).FirstOrDefault();
+                if (result is not null)
                 {
-                    return NotFound();
+                    return Conflict("Already registered user!");
                 }
-                else
-                {
-                    throw;
-                }
+
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetUser", new { id = user.Id }, user);
+
             }
 
-            return NoContent();
+            catch
+            {
+                return BadRequest("Invalid data.");
+            }
         }
 
-        // POST: api/Users
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<UserViewModel>> PostUser(UserViewModel user)
-        {
-          if (_context.Users == null)
-          {
-              return Problem("Entity set 'MusicBankContext.Users'  is null.");
-          }
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
-        }
-
-        // DELETE: api/Users/5
+       
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
@@ -116,9 +119,6 @@ namespace MusicBankAPI.Controllers
             return NoContent();
         }
 
-        private bool UserExists(int id)
-        {
-            return (_context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+       
     }
 }

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicBankAPI.Context;
 using MusicBankAPI.Models;
+using MusicBankAPI.ViewModels;
+using AutoMapper;
+using System.Collections;
 
 namespace MusicBankAPI.Controllers
 {
@@ -15,15 +13,18 @@ namespace MusicBankAPI.Controllers
     public class ArtistsController : ControllerBase
     {
         private readonly MusicBankContext _context;
+        private readonly IMapper _mapper;
 
-        public ArtistsController(MusicBankContext context)
+        public ArtistsController(MusicBankContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
+
         }
 
-        // GET: api/Artists
+        
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ArtistViewModel>>> GetArtists()
+        public async Task<ActionResult<IEnumerable<Artist>>> GetArtists()
         {
           if (_context.Artists == null)
           {
@@ -32,9 +33,9 @@ namespace MusicBankAPI.Controllers
             return await _context.Artists.ToListAsync();
         }
 
-        // GET: api/Artists/5
+        
         [HttpGet("{id}")]
-        public async Task<ActionResult<ArtistViewModel>> GetArtist(int id)
+        public async Task<ActionResult<Artist>> GetArtist(int id)
         {
           if (_context.Artists == null)
           {
@@ -50,53 +51,59 @@ namespace MusicBankAPI.Controllers
             return artist;
         }
 
-        // PUT: api/Artists/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+       
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutArtist(int id, ArtistViewModel artist)
+        public async Task<ActionResult<Artist>> PutArtist(int id, ArtistViewModel artistViewModel)
         {
-            if (id != artist.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(artist).State = EntityState.Modified;
-
             try
             {
+                Artist artist = await _context.Artists.FindAsync(id);
+                if (artist is null)
+                {
+                    return NotFound("Artist not found."); ;
+                }
+                artist.Name = artistViewModel.Name;
+                _context.Entry(artist).State = EntityState.Modified;
+                _context.Artists.Update(artist);
                 await _context.SaveChangesAsync();
+
+                return artist;
             }
-            catch (DbUpdateConcurrencyException)
+            catch
             {
-                if (!ArtistExists(id))
+                return BadRequest("Problem!");
+            }
+        }
+
+        
+        [HttpPost]
+        public async Task<ActionResult<Artist>> PostArtist(ArtistViewModel artistViewModel)
+        {
+            try
+            {
+                Artist artist = _mapper.Map<Artist>(artistViewModel);
+                var artistsList = await _context.Artists.ToListAsync();
+
+                var result = artistsList.Where(x => x.Name == artistViewModel.Name).FirstOrDefault();
+                if (result is not null)
                 {
-                    return NotFound();
+                    return Conflict("Already registered artist!");
                 }
-                else
-                {
-                    throw;
-                }
+
+                _context.Artists.Add(artist);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetArtist", new { id = artist.Id }, artist);
+               
             }
 
-            return NoContent();
+            catch
+            {
+                return BadRequest("Invalid data.");
+            }
         }
 
-        // POST: api/Artists
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<ArtistViewModel>> PostArtist(ArtistViewModel artist)
-        {
-          if (_context.Artists == null)
-          {
-              return Problem("Entity set 'MusicBankContext.Artists'  is null.");
-          }
-            _context.Artists.Add(artist);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetArtist", new { id = artist.Id }, artist);
-        }
-
-        // DELETE: api/Artists/5
+        
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteArtist(int id)
         {
@@ -116,9 +123,5 @@ namespace MusicBankAPI.Controllers
             return NoContent();
         }
 
-        private bool ArtistExists(int id)
-        {
-            return (_context.Artists?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
     }
 }

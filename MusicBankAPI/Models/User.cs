@@ -2,7 +2,7 @@
 
 namespace MusicBankAPI.Models
 {
-    public class UserViewModel
+    public class User
     {
         public int Id { get; set; }
         [MaxLength(50)]

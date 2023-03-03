@@ -2,7 +2,7 @@
 
 namespace MusicBankAPI.Models
 {
-    public class TagViewModel
+    public class Tag
     {
         public int Id { get; set; }
         [MaxLength(30)]

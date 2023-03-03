@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Imaginary Sounds</title>
     <link rel="shortcut icon" href="./Images/favicon01.png" type="image/png" />
-    <link href="./wwwroot/css/site.css" rel="stylesheet">
+    <link href=".././css/site.css" rel="stylesheet">
 
 </head>
 
@@ -43,13 +43,19 @@
 
     <main class="main">
         <div class="player">
-            <h4><i class="material-icons" id="equalizer">equalizer</i> Playlist</h4>
-
-
-            <div class="card">
-
+            <div class="loginCard">
+                <h4>Login</h4>
+                <form id="formulario">
+                    <h5>Email</h5>
+                    <input class="text" type="text" name="email" id="email" placeholder="Insert your email">
+                    <h5>Password</h5>
+                    <input class="text" type="text" name="password" id="password" placeholder="Insert yout password">
+                </form>
+                <button class="add">Submit</button>
             </div>
-            <audio></audio>
+
+
+        </div>
 
         </div>
 
@@ -60,7 +66,7 @@
     <footer class="footer">
         <p>All rights reserved</p>
     </footer>
-    <script src="./wwwroot/js/site.js" type="module"></script>
+    <script src=".././js/login.js" type="module"></script>
 </body>
 
 </html>

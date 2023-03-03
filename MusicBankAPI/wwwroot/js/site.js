@@ -16,13 +16,7 @@ redirectLogin.addEventListener("click", () => {
     window.location.href = "./login.html"
 
 })
-// const redirectLibrary = document.querySelector("#redirectLibrary")
-// redirectLibrary.addEventListener("click", () => {
-//     const libraryString = JSON.stringify(library)
-//     localStorage.setItem("library", libraryString)
-//     window.location.href = "./library.html"
 
-// })
 
 
 function GetAudios() {

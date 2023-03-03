@@ -1,5 +1,20 @@
 ﻿let cart = []
+
 const card = document.querySelector(".card");
+
+const cartNumber = document.querySelector("#cartNumber")
+let counter = 0;
+cartNumber.innerHTML = counter
+
+
+const stopAudio = document.querySelector("#stop")
+stopAudio.addEventListener("click", (() => {
+    const audio = document.querySelector('audio')
+    audio.src = audio
+    audio.stop()
+
+}))
+
 
 const redirectCart = document.querySelector("#redirectCart")
 redirectCart.addEventListener("click", () => {
@@ -16,7 +31,6 @@ redirectLogin.addEventListener("click", () => {
     window.location.href = "./login.html"
 
 })
-
 
 
 function GetAudios() {
@@ -43,7 +57,6 @@ function GetAudios() {
 GetAudios()
 
 
-
 function playList(list) {
 
     list.forEach((item) => {
@@ -68,16 +81,13 @@ function playList(list) {
         buttonBuy.classList.add("buttonBuy")
         const cartIcon = document.createElement("img")
         cartIcon.classList.add("cart")
-        cartIcon.src = "wwwroot/Images/cart.png"
+        cartIcon.src = ".././Images/cart.png"
 
         const controlersContainer = document.createElement("div")
         controlersContainer.classList.add("controlersContainer")
         const playButton = document.createElement("button")
-        playButton.classList.add("buttonControlers")
+        playButton.classList.add("buttonBuy")
         playButton.innerText = "Play"
-        const stopButton = document.createElement("button")
-        stopButton.classList.add("buttonControlers")
-        stopButton.innerText = "Stop"
 
         card.appendChild(cardContainer)
         cardContainer.appendChild(cover)
@@ -85,12 +95,12 @@ function playList(list) {
 
         audioDescription.appendChild(cardContent)
         cardContent.appendChild(title)
-        cardContent.appendChild(buttonBuy)
         buttonBuy.appendChild(cartIcon)
 
         audioDescription.appendChild(controlersContainer)
         controlersContainer.append(playButton)
-        controlersContainer.append(stopButton)
+        controlersContainer.appendChild(buttonBuy)
+
 
         playButton.addEventListener("click", (() => {
             const audio = document.querySelector('audio')
@@ -98,21 +108,19 @@ function playList(list) {
             audio.play()
 
         }))
-        stopButton.addEventListener("click", (() => {
-            const audio = document.querySelector('audio')
-            audio.src = item.file
-            audio.stop()
 
-        }))
 
-        buttonBuy.addEventListener("click", (() => { cart.push(item) }))
-
+        buttonBuy.addEventListener("click", (() => { AddToCart(item) }))
     })
-
 }
 
+function AddToCart(item) {
+    if (!cart.includes(item)) {
+        cart.push(item)
+        cartNumber.innerHTML++
 
-
+    }
+}
 
 
 

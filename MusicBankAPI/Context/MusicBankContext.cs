@@ -12,9 +12,10 @@ namespace MusicBankAPI.Context
         public DbSet <Composer> Composers { get; set; }
         public DbSet<Song> Songs { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<Tag> Tag { get; set; } 
+        public DbSet<Tag> Tags { get; set; } 
         public DbSet<UserSongs> UserSongs { get; set; }
         public DbSet<SongTags> SongTags { get; set; }
+        public DbSet<StatusTable> StatusTable { get; set; }
        
     }
 }

@@ -10,7 +10,7 @@ namespace MusicBankAPI.Models
         [MaxLength(50)]
         public string Email { get; set; }
         [MaxLength(50)]
-        public string Senha { get; set; }
+        public string Password { get; set; }
         public DateTime RegisterDate { get; set; } = DateTime.Now;
     }
 }

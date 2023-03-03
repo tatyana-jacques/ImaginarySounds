@@ -1,10 +1,11 @@
 const downloadArea = document.querySelector(".downloadArea")
-const cart = JSON.parse(localStorage.getItem("cart")) ?? []
+let cart = JSON.parse(localStorage.getItem("cart")) ?? []
 const card = document.querySelector(".card")
 
 shopping(cart)
 
 function shopping(list) {
+    card.innerHTML = " "
     list.forEach((item) => {
         const cardContainer = document.createElement("div")
         cardContainer.classList.add("cardContainer")
@@ -27,16 +28,6 @@ function shopping(list) {
         buttonRemove.classList.add("buttonBuy")
         buttonRemove.innerText = "Remove"
 
-
-        const controlersContainer = document.createElement("div")
-        controlersContainer.classList.add("controlersContainer")
-        const playButton = document.createElement("button")
-        playButton.classList.add("buttonControlers")
-        playButton.innerText = "Play"
-        const stopButton = document.createElement("button")
-        stopButton.classList.add("buttonControlers")
-        stopButton.innerText = "Stop"
-
         card.appendChild(cardContainer)
         cardContainer.appendChild(cover)
         cardContainer.appendChild(audioDescription)
@@ -45,31 +36,17 @@ function shopping(list) {
         cardContent.appendChild(title)
         cardContent.appendChild(buttonRemove)
 
-
-        audioDescription.appendChild(controlersContainer)
-        controlersContainer.append(playButton)
-        controlersContainer.append(stopButton)
-
-        playButton.addEventListener("click", (() => {
-            const audio = document.querySelector('audio')
-            audio.src = item.file
-            audio.play()
-
-        }))
-        stopButton.addEventListener("click", (() => {
-            const audio = document.querySelector('audio')
-            audio.src = item.file
-            audio.stop()
-
-        }))
-
-        buttonRemove.addEventListener("click", (() => { cart.push(item) }))
+        buttonRemove.addEventListener("click", (() => { RemoveCard(item) }))
 
     })
 
-
-
-
-
 }
+
+function RemoveCard(indice) {
+    cart = cart.filter((item) => item !== indice)
+    const cartString = JSON.stringify(cart)
+    localStorage.setItem("cart", cartString)
+    shopping(cart)
+}
+
 

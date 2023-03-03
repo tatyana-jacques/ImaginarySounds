@@ -24,22 +24,22 @@ namespace MusicBankAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Tag>>> GetTag()
         {
-          if (_context.Tag == null)
+          if (_context.Tags == null)
           {
               return NotFound();
           }
-            return await _context.Tag.ToListAsync();
+            return await _context.Tags.ToListAsync();
         }
 
         
         [HttpGet("{id}")]
         public async Task<ActionResult<Tag>> GetTag(int id)
         {
-          if (_context.Tag == null)
+          if (_context.Tags == null)
           {
               return NotFound();
           }
-            var tag = await _context.Tag.FindAsync(id);
+            var tag = await _context.Tags.FindAsync(id);
 
             if (tag == null)
             {
@@ -55,14 +55,14 @@ namespace MusicBankAPI.Controllers
         {
             try
             {
-                Tag tag = await _context.Tag.FindAsync(id);
+                Tag tag = await _context.Tags.FindAsync(id);
                 if (tag is null)
                 {
                     return NotFound("Artist not found."); ;
                 }
                 tag.Title = tagViewModel.Title;
                 _context.Entry(tag).State = EntityState.Modified;
-                _context.Tag.Update(tag);
+                _context.Tags.Update(tag);
                 await _context.SaveChangesAsync();
 
                 return tag;
@@ -80,7 +80,7 @@ namespace MusicBankAPI.Controllers
             try
             {
                 Tag tag = _mapper.Map<Tag>(tagViewModel);
-                var tagsList = await _context.Tag.ToListAsync();
+                var tagsList = await _context.Tags.ToListAsync();
 
                 var result = tagsList.Where(x => x.Title == tagViewModel.Title).FirstOrDefault();
                 if (result is not null)
@@ -88,7 +88,7 @@ namespace MusicBankAPI.Controllers
                     return Conflict("Already registered tag!");
                 }
 
-                _context.Tag.Add(tag);
+                _context.Tags.Add(tag);
                 await _context.SaveChangesAsync();
 
                 return CreatedAtAction("GetTag", new { id = tag.Id }, tag);
@@ -105,17 +105,17 @@ namespace MusicBankAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTag(int id)
         {
-            if (_context.Tag == null)
+            if (_context.Tags == null)
             {
                 return NotFound();
             }
-            var tag = await _context.Tag.FindAsync(id);
+            var tag = await _context.Tags.FindAsync(id);
             if (tag == null)
             {
                 return NotFound();
             }
 
-            _context.Tag.Remove(tag);
+            _context.Tags.Remove(tag);
             await _context.SaveChangesAsync();
 
             return NoContent();

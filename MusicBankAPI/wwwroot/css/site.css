@@ -21,6 +21,7 @@ a {
 
 .add {
   margin: 20px;
+  margin-bottom: 40px;
   min-width: 150px;
   min-height: 50px;
   border-radius: 20px;
@@ -151,6 +152,7 @@ button:hover {
 
 .controlersContainer {
   display: flex;
+  flex-direction: column;
   align-self: flex-end;
 }
 
@@ -242,6 +244,12 @@ header {
   justify-content: end;
   height: 100%;
   width: 50%;
+}
+
+.playlistTop {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .player {

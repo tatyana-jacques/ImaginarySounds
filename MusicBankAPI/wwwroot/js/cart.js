@@ -1,4 +1,5 @@
 let cart = JSON.parse(localStorage.getItem("shoppingCart")) ?? []
+let uId = JSON.parse(localStorage.getItem("uId")) ?? 0
 const card = document.querySelector(".card")
 
 const redirectCart = document.querySelector("#home")
@@ -8,6 +9,10 @@ redirectCart.addEventListener("click", () => {
     window.location.href = "./index.html"
 
 })
+
+
+const addLibraryButton = document.getElementById("addButton")
+addLibraryButton.addEventListener("click", (() => addLib()))
 
 shopping(cart)
 
@@ -56,4 +61,28 @@ function RemoveCard(indice) {
     shopping(cart)
 }
 
+function addLib() {
+    cart.forEach((item) => {
+        let data = {
 
+            "userId": uId,
+            "songId": item.id,
+        }
+        fetch("http://localhost:5276/api/UserSongs",
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            }).then(() => {
+                alert(item.id + " " + uId)
+                cart = []
+                card.innerHTML = " "
+
+            })
+            .catch(() => alert("Error :("))
+
+    })
+
+}

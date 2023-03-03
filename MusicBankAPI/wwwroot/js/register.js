@@ -16,9 +16,9 @@ home.addEventListener("click", () => {
 })
 
 const submit = document.getElementById("submit")
-submit.addEventListener("click", () => { login() })
+submit.addEventListener("click", () => { register() })
 
-function login() {
+function register() {
     const inputs = {
 
         "name": uName.value,

@@ -1,15 +1,20 @@
-const email = document.getElementById("email")
-const password = document.getElementById("password")
-const createAccountLink = document.querySelector(".createAccount")
-createAccountLink.addEventListener("click", () => {
+let cart = JSON.parse(localStorage.getItem("shoppingCart")) ?? []
+let logedIn = false;
+
+const cartNumber = document.querySelector("#cartNumber")
+cartNumber.innerHTML = cart.length
+
+const home = document.querySelector("#home")
+home.addEventListener("click", () => {
     const cartString = JSON.stringify(cart)
     localStorage.setItem("shoppingCart", cartString)
-    window.location.href = "./register.html"
+    window.location.href = "./index.html"
 
 })
-
-
-buttonSubmit.addEventListener("click", () => getUsers())
+const email = document.getElementById("email")
+const password = document.getElementById("password")
+const submit = document.getElementById("submit")
+submit.addEventListener("click", () => getUsers())
 
 
 function getUsers() {
@@ -20,24 +25,35 @@ function getUsers() {
                 return {
                     id: item.id,
                     email: item.email,
-                    senha: item.senha,
+                    password: item.password,
                     name: item.name,
                 }
             })
 
             list.forEach((item) => {
-                if (item.email === email && item.senha === password) {
+                //alert("welcome" + item.name)
+                if (item.email === email.value && item.password === password.value) {
                     alert("Welcome " + item.name + "!")
-                    const userId = JSON.stringify(item.id)
-                    localStorage.setItem("id", idString)
+                    logedIn = true
+                    const idString = JSON.stringify(item.id)
+                    localStorage.setItem("uId", idString)
+                    window.location.href = "./cart.html"
 
                 }
+
+            })
+
+            if (!logedIn) {
+                alert("Invalid login!")
             }
-            )
 
 
         })
-        .catch(alert("Inexistent user"))
+
+        .catch(error => {
+            alert(error)
+        })
+
 }
 
 

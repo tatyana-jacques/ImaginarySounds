@@ -1,4 +1,6 @@
 ﻿let cart = JSON.parse(localStorage.getItem("shoppingCart")) ?? []
+let uId = JSON.parse(localStorage.getItem("uId")) ?? 0
+
 
 const card = document.querySelector(".card");
 
@@ -14,12 +16,7 @@ stopAudio.addEventListener("click", (() => {
 }))
 
 const redirectCart = document.querySelector("#redirectCart")
-redirectCart.addEventListener("click", () => {
-    const cartString = JSON.stringify(cart)
-    localStorage.setItem("shoppingCart", cartString)
-    window.location.href = "./cart.html"
-
-})
+redirectCart.addEventListener("click", () => { verifyLogin() })
 
 const redirectRegister = document.querySelector("#redirectRegister")
 redirectRegister.addEventListener("click", () => {
@@ -58,8 +55,6 @@ function GetAudios() {
             alert(error)
         })
 }
-
-
 
 
 function playList(list) {
@@ -133,9 +128,19 @@ function AddToCart(item) {
         cart.push(item)
         cartNumber.innerHTML = cart.length
     }
-
 }
 
+function verifyLogin() {
+    if (uId === 0) {
+        alert("Login to see your cart items!")
+    }
+    else {
+        const cartString = JSON.stringify(cart)
+        localStorage.setItem("shoppingCart", cartString)
+        window.location.href = "./cart.html"
+    }
+
+}
 
 
 

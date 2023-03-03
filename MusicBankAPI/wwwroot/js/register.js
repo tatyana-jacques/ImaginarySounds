@@ -1,16 +1,31 @@
-const name = document.getElementById("name")
+let cart = JSON.parse(localStorage.getItem("shoppingCart")) ?? []
+
+const cartNumber = document.querySelector("#cartNumber")
+cartNumber.innerHTML = cart.length
+
+const uName = document.getElementById("uName")
 const email = document.getElementById("email")
 const password = document.getElementById("password")
 
+const home = document.querySelector("#home")
+home.addEventListener("click", () => {
+    const cartString = JSON.stringify(cart)
+    localStorage.setItem("shoppingCart", cartString)
+    window.location.href = "./index.html"
+
+})
+
+const submit = document.getElementById("submit")
+submit.addEventListener("click", () => { login() })
+
 function login() {
     const inputs = {
-        "id": 0,
-        "name": uName.value,
-        "text": text.value,
-        "dataPostagem": date
 
+        "name": uName.value,
+        "email": email.value,
+        "password": password.value
     }
-    fetch("http://localhost:5018/api/Posts",
+    fetch("http://localhost:5276/api/Users",
         {
             method: 'POST',
             headers: {
@@ -18,9 +33,12 @@ function login() {
             },
             body: JSON.stringify(inputs),
         }).then(() => {
-            updateFront()
+            alert("Successful registration!")
+            uName.innerHTML = ""
+            email.innerHTML = ""
+            window.location.href = "./login.html"
 
         })
-        .catch(() => alert("Error"))
+        .catch(() => alert("Error :("))
 
 }

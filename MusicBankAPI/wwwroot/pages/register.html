@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Imaginary Sounds</title>
     <link rel="shortcut icon" href="./Images/favicon01.png" type="image/png" />
-    <link href="./wwwroot/css/site.css" rel="stylesheet">
+    <link href=".././css/site.css" rel="stylesheet">
 
 </head>
 
@@ -18,23 +18,17 @@
 
     <header>
 
-        <img id="logo" src="./wwwroot/Images/logo.png">
+        <img id="logo" src=".././Images/logo.png">
 
         <div class="navegator">
 
+            <button class="buttonMenu" id="home">
+                <div>Home</div>
+            </button>
             <button class="buttonMenu" id="redirectCart">
-                <img class="cart" src="wwwroot/Images/cart.png">
-                <div>1</div>
+                <img class="cart" src=".././Images/cart.png">
+                <div id="cartNumber"></div>
             </button>
-
-            <button class="buttonMenu" id="redirectLogin">
-                <div>Login</div>
-            </button>
-
-            <button class="buttonMenu" id="redirectLibrary">
-                <div id="number">Library</div>
-            </button>
-
         </div>
 
     </header>
@@ -44,14 +38,17 @@
     <main class="main">
         <div class="player">
             <div class="loginCard">
-                <h4>Login</h4>
+                <h4>Register</h4>
                 <form id="formulario">
+                    <h5>Name</h5>
+                    <input class="text" type="text" id="uName" placeholder="Insert your name">
                     <h5>Email</h5>
-                    <input class="text" type="text" name="email" id="email" placeholder="Insert your email">
+                    <input class="text" type="text" id="email" placeholder="Insert your email">
                     <h5>Password</h5>
-                    <input class="text" type="text" name="password" id="password" placeholder="Insert yout password">
+                    <input class="text" type="password" id="password" placeholder="Insert yout password">
                 </form>
-                <button class="add">Submit</button>
+                <button class="add" id="submit">Submit</button>
+
             </div>
 
 
@@ -66,7 +63,7 @@
     <footer class="footer">
         <p>All rights reserved</p>
     </footer>
-    <script src="./wwwroot/js/register.js" type="module"></script>
+    <script src=".././js/register.js" type="module"></script>
 </body>
 
 </html>

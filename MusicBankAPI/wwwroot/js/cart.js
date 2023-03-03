@@ -1,6 +1,13 @@
-const downloadArea = document.querySelector(".downloadArea")
-let cart = JSON.parse(localStorage.getItem("cart")) ?? []
+let cart = JSON.parse(localStorage.getItem("shoppingCart")) ?? []
 const card = document.querySelector(".card")
+
+const redirectCart = document.querySelector("#home")
+redirectCart.addEventListener("click", () => {
+    const cartString = JSON.stringify(cart)
+    localStorage.setItem("shoppingCart", cartString)
+    window.location.href = "./index.html"
+
+})
 
 shopping(cart)
 
@@ -45,7 +52,7 @@ function shopping(list) {
 function RemoveCard(indice) {
     cart = cart.filter((item) => item !== indice)
     const cartString = JSON.stringify(cart)
-    localStorage.setItem("cart", cartString)
+    localStorage.setItem("shoppingCart", cartString)
     shopping(cart)
 }
 

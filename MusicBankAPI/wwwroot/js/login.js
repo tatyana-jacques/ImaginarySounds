@@ -1,5 +1,12 @@
 const email = document.getElementById("email")
 const password = document.getElementById("password")
+const createAccountLink = document.querySelector(".createAccount")
+createAccountLink.addEventListener("click", () => {
+    const cartString = JSON.stringify(cart)
+    localStorage.setItem("shoppingCart", cartString)
+    window.location.href = "./register.html"
+
+})
 
 
 buttonSubmit.addEventListener("click", () => getUsers())

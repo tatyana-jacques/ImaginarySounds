@@ -1,11 +1,9 @@
-﻿let cart = []
+﻿let cart = JSON.parse(localStorage.getItem("shoppingCart")) ?? []
 
 const card = document.querySelector(".card");
 
 const cartNumber = document.querySelector("#cartNumber")
-let counter = 0;
-cartNumber.innerHTML = counter
-
+cartNumber.innerHTML = cart.length
 
 const stopAudio = document.querySelector("#stop")
 stopAudio.addEventListener("click", (() => {
@@ -15,23 +13,30 @@ stopAudio.addEventListener("click", (() => {
 
 }))
 
-
 const redirectCart = document.querySelector("#redirectCart")
 redirectCart.addEventListener("click", () => {
     const cartString = JSON.stringify(cart)
-    localStorage.setItem("cart", cartString)
+    localStorage.setItem("shoppingCart", cartString)
     window.location.href = "./cart.html"
 
+})
+
+const redirectRegister = document.querySelector("#redirectRegister")
+redirectRegister.addEventListener("click", () => {
+    const cartString = JSON.stringify(cart)
+    localStorage.setItem("shoppingCart", cartString)
+    window.location.href = "./register.html"
 })
 
 const redirectLogin = document.querySelector("#redirectLogin")
 redirectLogin.addEventListener("click", () => {
     const cartString = JSON.stringify(cart)
-    localStorage.setItem("cart", cartString)
+    localStorage.setItem("shoppingCart", cartString)
     window.location.href = "./login.html"
 
 })
 
+GetAudios()
 
 function GetAudios() {
     fetch("http://localhost:5276/api/Songs")
@@ -54,7 +59,7 @@ function GetAudios() {
         })
 }
 
-GetAudios()
+
 
 
 function playList(list) {
@@ -115,11 +120,20 @@ function playList(list) {
 }
 
 function AddToCart(item) {
-    if (!cart.includes(item)) {
-        cart.push(item)
-        cartNumber.innerHTML++
+    let canBuy = true
 
+    for (var i = 0; i < cart.length; i++) {
+
+        if (item.title === cart[i].title) {
+            alert("Item already added!")
+            canBuy = false
+        }
     }
+    if (canBuy === true) {
+        cart.push(item)
+        cartNumber.innerHTML = cart.length
+    }
+
 }
 
 

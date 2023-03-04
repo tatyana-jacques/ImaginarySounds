@@ -1,4 +1,4 @@
-﻿namespace MusicBankAPI.Models
+﻿namespace Process
 {
     public class StatusTable
     {

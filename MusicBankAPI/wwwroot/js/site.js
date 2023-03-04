@@ -9,9 +9,8 @@ cartNumber.innerHTML = cart.length
 
 const stopAudio = document.querySelector("#stop")
 stopAudio.addEventListener("click", (() => {
-    const audio = document.querySelector('audio')
-    audio.src = audio
-    audio.stop()
+    const audioSource = document.querySelector('#audio')
+    audioSource.pause()
 
 }))
 
@@ -33,9 +32,12 @@ redirectLogin.addEventListener("click", () => {
 
 })
 
-GetAudios()
+const redirectLib = document.querySelector("#redirectLibrary")
+redirectLib.addEventListener("click", () => { verifyLoginLib() })
 
-function GetAudios() {
+getAudios()
+
+function getAudios() {
     fetch("http://localhost:5276/api/Songs")
         .then(e => e.json())
         .then(data => {
@@ -101,7 +103,6 @@ function playList(list) {
         controlersContainer.append(playButton)
         controlersContainer.appendChild(buttonBuy)
 
-
         playButton.addEventListener("click", (() => {
             const audio = document.querySelector('audio')
             audio.src = item.file
@@ -138,6 +139,17 @@ function verifyLogin() {
         const cartString = JSON.stringify(cart)
         localStorage.setItem("shoppingCart", cartString)
         window.location.href = "./cart.html"
+    }
+
+}
+function verifyLoginLib() {
+    if (uId === 0) {
+        alert("Login to navegate to your Library!")
+    }
+    else {
+        const cartString = JSON.stringify(cart)
+        localStorage.setItem("shoppingCart", cartString)
+        window.location.href = "./library.html"
     }
 
 }

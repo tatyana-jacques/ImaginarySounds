@@ -6,6 +6,7 @@ using MusicBankAPI.Models;
 using MusicBankAPI.ViewModels;
 using AutoMapper;
 
+
 namespace MusicBankAPI.Controllers
 {
     [Route("api/[controller]")]
@@ -15,10 +16,12 @@ namespace MusicBankAPI.Controllers
         private readonly MusicBankContext _context;
         private readonly IMapper _mapper;
 
+
         public SongTagsController(MusicBankContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
+
         }
 
 
@@ -37,7 +40,7 @@ namespace MusicBankAPI.Controllers
                 .ToListAsync();
         }
 
-        
+
         [HttpGet("{id}")]
         public async Task<ActionResult<SongTags>> GetSongTags(int id)
         {
@@ -48,8 +51,8 @@ namespace MusicBankAPI.Controllers
             var songTags = await _context.SongTags
                 .Include(x => x.Tag)
                 .Include(x => x.Song)
-                .Include(x => x.Song.Artist )
-                .Include(x=>x.Song.Composer)
+                .Include(x => x.Song.Artist)
+                .Include(x => x.Song.Composer)
                 .Where(y => y.Id == id).FirstOrDefaultAsync();
 
             if (songTags == null)
@@ -60,7 +63,7 @@ namespace MusicBankAPI.Controllers
             return songTags;
         }
 
-        
+
         [HttpPut("{id}")]
         public async Task<ActionResult<SongTagsViewModel>> PutSongTags(int id, SongTagsViewModel songTagsViewModel)
         {
@@ -82,7 +85,7 @@ namespace MusicBankAPI.Controllers
                 }
                 songTag.SongId = songTagsViewModel.SongId;
                 songTag.TagId = songTagsViewModel.TagId;
-               
+
 
                 _context.Entry(songTag).State = EntityState.Modified;
                 _context.SongTags.Update(songTag);
@@ -96,7 +99,7 @@ namespace MusicBankAPI.Controllers
             }
         }
 
-       
+
         [HttpPost]
         public async Task<ActionResult<SongTagsViewModel>> PostSongTags(SongTagsViewModel songTagsViewModel)
         {
@@ -114,6 +117,7 @@ namespace MusicBankAPI.Controllers
                     }
                 }
 
+
                 _context.SongTags.Add(songTag);
                 await _context.SaveChangesAsync();
 
@@ -126,9 +130,9 @@ namespace MusicBankAPI.Controllers
                 return BadRequest("Invalid data.");
             }
         }
-    
 
-        
+
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSongTags(int id)
         {
@@ -148,6 +152,6 @@ namespace MusicBankAPI.Controllers
             return NoContent();
         }
 
-       
+
     }
 }

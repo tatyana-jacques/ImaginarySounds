@@ -62,27 +62,46 @@ function RemoveCard(indice) {
 }
 
 function addLib() {
-    cart.forEach((item) => {
-        let data = {
+    const list = cart.map((item) => {
+        return {
 
             "userId": uId,
             "songId": item.id,
         }
-        fetch("http://localhost:5276/api/UserSongs",
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            }).then(() => {
-                alert(item.id + " " + uId)
-                cart = []
-                card.innerHTML = " "
-
-            })
-            .catch(() => alert("Error :("))
-
     })
+
+    fetch("http://localhost:5276/api/UserSongs",
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userSongList: list
+            }),
+        }).then(() => {
+
+            const identifier = setInterval(async () => {
+                let finishProcess = false
+                const toJson = await fetch("http://localhost:5276/api/UserSongs/GetStatusByUserId?userId=" + uId)
+                const dado = await toJson.json()
+                if (dado === "ok") {
+                    alert("Seus dados estão na biblioteca.")
+                    finishProcess = true
+                }
+
+                if (finishProcess === true) {
+                    clearInterval(identifier)
+                }
+            }, 1000)
+
+        })
+        .catch(() => alert("Error :("))
+
+
+    cart = []
+    card.innerHTML = " "
+    const cartString = JSON.stringify(cart)
+    localStorage.setItem("shoppingCart", cartString)
 
 }

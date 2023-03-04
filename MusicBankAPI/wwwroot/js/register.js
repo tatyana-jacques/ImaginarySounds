@@ -12,7 +12,6 @@ home.addEventListener("click", () => {
     const cartString = JSON.stringify(cart)
     localStorage.setItem("shoppingCart", cartString)
     window.location.href = "./index.html"
-
 })
 
 const submit = document.getElementById("submit")

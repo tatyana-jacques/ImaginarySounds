@@ -5,7 +5,7 @@
 namespace MusicBankAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class FirstCharge : Migration
+    public partial class addmigrationInitialCharge : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -5,6 +5,8 @@ VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicBankAPI", "MusicBankAPI\MusicBankAPI.csproj", "{5143F37D-D078-43A9-B406-4D9A47E0C90C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Process", "Process\Process.csproj", "{283892B7-8143-453A-92B4-FE98E1C5824D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{5143F37D-D078-43A9-B406-4D9A47E0C90C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5143F37D-D078-43A9-B406-4D9A47E0C90C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5143F37D-D078-43A9-B406-4D9A47E0C90C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{283892B7-8143-453A-92B4-FE98E1C5824D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{283892B7-8143-453A-92B4-FE98E1C5824D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{283892B7-8143-453A-92B4-FE98E1C5824D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{283892B7-8143-453A-92B4-FE98E1C5824D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

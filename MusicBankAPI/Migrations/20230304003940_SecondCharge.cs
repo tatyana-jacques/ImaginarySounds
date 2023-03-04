@@ -58,6 +58,17 @@ namespace MusicBankAPI.Migrations
 
          );
 
+            migrationBuilder.Sql(
+                      "INSERT " +
+                      "INTO Users" +
+                          "(Name,Email,Password,RegisterDate) " +
+                      "VALUES" +
+                          "('Crazy Games','crazygames@devinhouse.com','crazy123','2022-06-15T13:45:30')," +
+                          "('Moonlight Studio','moonligthstudio@devinhouse.com','moonligth123','2022-06-15T13:45:30')," +
+                          "('Bored Cat Games','boredcatgames@devinhouse.com','boredcat123','2009-06-15T13:45:30')");
+
+
+
 
         }
 

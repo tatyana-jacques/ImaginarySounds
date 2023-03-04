@@ -12,8 +12,8 @@ using MusicBankAPI.Context;
 namespace MusicBankAPI.Migrations
 {
     [DbContext(typeof(MusicBankContext))]
-    [Migration("20230303115104_CreateDatabase")]
-    partial class CreateDatabase
+    [Migration("20230304003940_SecondCharge")]
+    partial class SecondCharge
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -134,6 +134,9 @@ namespace MusicBankAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

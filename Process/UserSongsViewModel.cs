@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MusicBankAPI.ViewModels
+namespace Process
 {
     public class UserSongsViewModel
     {

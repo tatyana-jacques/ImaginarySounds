@@ -4,6 +4,9 @@ using MusicBankAPI.Context;
 using MusicBankAPI.Models;
 using AutoMapper;
 using MusicBankAPI.ViewModels;
+using RabbitMQ.Client;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace MusicBankAPI.Controllers
 {
@@ -13,30 +16,40 @@ namespace MusicBankAPI.Controllers
     {
         private readonly MusicBankContext _context;
         private readonly IMapper _mapper;
+        private ConnectionFactory factory;
+
+
 
         public UsersController(MusicBankContext context, IMapper mapper)
         {
             _context = context;
-            _mapper = mapper;   
+            _mapper = mapper;
+
+            this.factory = new ConnectionFactory()
+            {
+                HostName = "167.172.186.10",
+                UserName = "tatyana",
+                Password = "learningRabbitMQ"
+            };
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-          if (_context.Users == null)
-          {
-              return NotFound();
-          }
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
             return await _context.Users.ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-          if (_context.Users == null)
-          {
-              return NotFound();
-          }
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
             var user = await _context.Users.FindAsync(id);
 
             if (user == null)
@@ -47,7 +60,7 @@ namespace MusicBankAPI.Controllers
             return user;
         }
 
-        
+
         [HttpPut("{id}")]
         public async Task<ActionResult<User>> PutUser(int id, UserViewModel userViewModel)
         {
@@ -71,7 +84,7 @@ namespace MusicBankAPI.Controllers
             }
         }
 
-        
+
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(UserViewModel userViewModel)
         {
@@ -86,10 +99,25 @@ namespace MusicBankAPI.Controllers
                     return Conflict("Already registered user!");
                 }
 
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
+                using (var connection = factory.CreateConnection())
+                using (var channel = connection.CreateModel())
+                {
+                    channel.QueueDeclare(queue: "userRegistration",
+                        durable: true,
+                        exclusive: false,
+                        autoDelete: false,
+                        arguments: null);
 
-                return CreatedAtAction("GetUser", new { id = user.Id }, user);
+                    var body = JsonConvert.SerializeObject(user);
+                    var userBytes = Encoding.UTF8.GetBytes(body);
+                    channel.BasicPublish(exchange: "",
+                                    routingKey: "userRegistration",
+                                    basicProperties: null,
+                                    body: userBytes);
+                }
+
+
+                return Ok(user);
 
             }
 
@@ -99,7 +127,7 @@ namespace MusicBankAPI.Controllers
             }
         }
 
-       
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
@@ -119,6 +147,6 @@ namespace MusicBankAPI.Controllers
             return NoContent();
         }
 
-       
+
     }
 }

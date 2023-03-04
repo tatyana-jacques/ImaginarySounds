@@ -49,7 +49,6 @@ function shopping(list) {
         cardContent.appendChild(buttonRemove)
 
         buttonRemove.addEventListener("click", (() => { RemoveCard(item) }))
-
     })
 
 }
@@ -70,7 +69,7 @@ function addLib() {
         }
     })
 
-    fetch("http://localhost:5276/api/UserSongs",
+    fetch("http://localhost:5276/api/UserSongs/PostUserSongs",
         {
             method: 'POST',
             headers: {
@@ -85,7 +84,7 @@ function addLib() {
                 let finishProcess = false
                 const toJson = await fetch("http://localhost:5276/api/UserSongs/GetStatusByUserId?userId=" + uId)
                 const dado = await toJson.json()
-                if (dado === "ok") {
+                if (dado == 1) {
                     alert("Seus dados estão na biblioteca.")
                     finishProcess = true
                 }

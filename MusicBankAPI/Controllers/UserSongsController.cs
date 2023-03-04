@@ -107,7 +107,7 @@ namespace MusicBankAPI.Controllers
 
 
                 _context.Entry(userSong).State = EntityState.Modified;
-               // _context.UserSongs.Update(userSong);
+                // _context.UserSongs.Update(userSong);
                 await _context.SaveChangesAsync();
 
                 return userSongViewModel;
@@ -135,31 +135,31 @@ namespace MusicBankAPI.Controllers
                 //     }
                 // }
 
-                using (var connection = factory.CreateConnection())
-                using (var channel = connection.CreateModel())
-                {
-                    channel.QueueDeclare(queue: "addToLib",
-                        durable: false,
-                        exclusive: false,
-                        autoDelete: false,
-                        arguments: null);
+                using var connection = factory.CreateConnection();
+                using var channel = connection.CreateModel();
 
-                    var body = JsonConvert.SerializeObject(userSongViewModel);
-                    var songBytes = Encoding.UTF8.GetBytes(body);
-                    channel.BasicPublish(exchange: "",
-                                    routingKey: "addToLib",
-                                    basicProperties: null,
-                                    body: songBytes);
-                }
+                channel.QueueDeclare(queue: "addToLib",
+                    durable: true,
+                    exclusive: false,
+                    autoDelete: false,
+                    arguments: null);
+
+                var body = JsonConvert.SerializeObject(userSongViewModel);
+                var songBytes = Encoding.UTF8.GetBytes(body);
+                channel.BasicPublish(exchange: "",
+                                routingKey: "addToLib",
+                                basicProperties: null,
+                                body: songBytes);
+
 
                 // _context.UserSongs.Add(userSong);
                 // await _context.SaveChangesAsync();
 
-                var status = new StatusTable
-                {
-                    UserId = userSongViewModel.UserSongList.First().UserId,
-                    Status = 0
-                };
+                // var status = new StatusTable
+                // {
+                //     UserId = userSongViewModel.UserSongList.First().UserId,
+                //     Status = 0
+                // };
 
                 return Ok(userSongViewModel);
 

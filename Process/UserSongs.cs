@@ -9,6 +9,6 @@ namespace Process
         public int UserId { get; set; }
         [ForeignKey("IdSong")]
         public int SongId { get; set; }
-       
+
     }
 }

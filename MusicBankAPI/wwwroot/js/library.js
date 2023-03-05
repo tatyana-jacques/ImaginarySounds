@@ -19,10 +19,12 @@ getAudios()
 
 
 function getAudios() {
-    fetch("http://localhost:5276/api/UserSongs?userId=uId")
+
+    fetch(`http://localhost:5276/api/UserSongs`)
         .then(e => e.json())
         .then(data => {
-            const list = data.map(item => {
+            const filteredList = data.filter((item) => item.userId === uId)
+            const list = filteredList.map(item => {
                 return {
                     id: item.id,
                     songId: item.song.id,
@@ -31,6 +33,7 @@ function getAudios() {
                     cover: item.song.cover
                 }
             })
+
             playList(list)
         })
         .catch(error => {

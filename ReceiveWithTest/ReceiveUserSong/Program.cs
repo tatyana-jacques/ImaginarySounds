@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using MusicBankAPI.Models;
 using Receive;
 using Process;
+using ReceiveUserSong;
 
 var factory = new ConnectionFactory()
 {
@@ -20,6 +21,7 @@ using (var channel = connection.CreateModel())
 {
 
     var consumer = new EventingBasicConsumer(channel);
+    var filterList = new FilterList();
 
     consumer.Received += (model, ea) =>
     {
@@ -28,7 +30,7 @@ using (var channel = connection.CreateModel())
         UserSongsViewModel userSongs = JsonConvert.DeserializeObject<UserSongsViewModel>(message);
 
         var userSongsToList = ctx.UserSongs.ToList();
-        var filteredList = FilterList(userSongsToList, userSongs.UserSongList);
+        var filteredList = filterList.List(userSongsToList, userSongs.UserSongList);
 
         var idUser = 0;
 
@@ -38,8 +40,6 @@ using (var channel = connection.CreateModel())
             {
                 idUser = x.UserId;
             }
-
-            //var newEntity = CreateUserSongs(x.UserId, x.SongId);
 
             ctx.UserSongs.Add(x
             );
@@ -69,41 +69,5 @@ using (var channel = connection.CreateModel())
     Console.ReadLine();
 }
 
-UserSongs CreateUserSongs(int userId, int songId)
-{
-    return new UserSongs
-    {
-        UserId = userId,
-        SongId = songId
-    };
 
-}
-
-List<UserSongs> FilterList(List<UserSongs> contextList, List<UserSongViewModel> cartList)
-{
-    var returnList = new List<UserSongs>();
-
-    foreach (var x in cartList)
-    {
-        bool contains = false;
-        foreach (var y in contextList)
-            if (y.UserId == x.UserId && y.SongId == x.SongId)
-            {
-                contains = true;
-
-            }
-        if (contains == false)
-        {
-            var entity = new UserSongs
-            {
-                UserId = x.UserId,
-                SongId = x.SongId
-
-            };
-            returnList.Add(entity);
-        }
-
-    }
-    return returnList;
-}
 

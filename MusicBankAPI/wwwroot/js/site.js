@@ -32,6 +32,12 @@ redirectLogin.addEventListener("click", () => {
 
 })
 
+const logout = document.querySelector("#logout")
+logout.addEventListener("click", () => {
+    localStorage.setItem("uId", 0)
+
+})
+
 const redirectLib = document.querySelector("#redirectLibrary")
 redirectLib.addEventListener("click", () => { verifyLoginLib() })
 

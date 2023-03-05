@@ -8,6 +8,12 @@ redirectCart.addEventListener("click", () => {
     localStorage.setItem("shoppingCart", cartString)
     window.location.href = "./index.html"
 })
+const redirectLib = document.querySelector("#library")
+redirectLib.addEventListener("click", () => {
+    const cartString = JSON.stringify(cart)
+    localStorage.setItem("shoppingCart", cartString)
+    window.location.href = "./library.html"
+})
 
 
 const addLibraryButton = document.getElementById("addButton")
@@ -99,82 +105,40 @@ function addLib() {
             }),
         }).then(() => {
 
-            // const identifier = setInterval(async () => {
-            //     let finishProcess = false
-            //     const toJson = await fetch("http://localhost:5276/api/UserSongs?Id=uID")
-            //     alert(toJson.Id)
-            //     const dado = await toJson.json()
-            //     if (dado == 1) {
-            //         alert("New items added to your library!")
-            //         finishProcess = true
-            //     }
-
-            //     if (finishProcess === true) {
-            //         clearInterval(identifier)
-            //     }
-            // }, 100000)
-            //     setInterval(() => {
-            //         fetch('http://localhost:5276/api/UserSongs')
-            //             .then(response => response.json())
-            //             .then(data => {
-            //                 //let finishProcess = false
-            //                 const list = data.map(item => {
-            //                     return {
-            //                         id: item.id,
-            //                         status: item.Status,
-            //                         useId: item.UserId,
-            //                     }
-            //                 })
-            //                 const filteredList = list.filter((item, index) => {
-            //                     return index === list.findIndex(obj => {
-            //                         return obj.UserId === item.UserId;
-            //                     })
-            //                 });
-            //                 const lastItem = filteredList.pop();
-            //                 alert(lastItem.Status)
-            //                 if (lastItem.Status == 1) {
-
-            //                     clearInterval(identifier)
-            //                 }
-
-
-            //             }, 60000)
-            //     })
-            // })
         })
+
         .catch(() => alert("Error :("))
 
-
-
-
-    fetch("http://localhost:5276/api/StatusTables")
-        .then(response => response.json())
-        .then(data => {
-            //let finishProcess = false
-            const list = data.map(item => {
-                return {
-                    id: item.id,
-                    status: item.status,
-                    userId: item.userId
+    let count = 0;
+    const calling = setInterval(() => {
+        fetch("http://localhost:5276/api/StatusTables?userId=uId")
+            .then(response => response.json())
+            .then(data => {
+                const list = data.map(item => {
+                    return {
+                        id: item.id,
+                        status: item.status,
+                        userId: item.userId
+                    }
+                })
+                const lastItem = list.pop();
+                count++
+                if (lastItem.status == 1) {
+                    alert("New items added to your library!")
+                    clearInterval(calling)
                 }
+                if (count >= 6) {
+                    alert("Failed to save your items. Check if the items are already in your library or come back later :(")
+                    clearInterval(calling)
+
+                }
+
             })
-            const filteredList = list.filter((item) => item.userId === uId)
-            const lastItem = filteredList.pop();
-            alert(lastItem.id)
-            if (lastItem.status == 1) {
+            .catch(error => {
+                alert(error)
+            })
 
-                //clearInterval(identifier)
-            }
-
-        })
-        .catch(error => {
-            alert(error)
-        })
-
-
-
-
-
+    }, 5000)
 
 
     cart = []

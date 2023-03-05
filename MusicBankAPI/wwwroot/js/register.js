@@ -32,7 +32,7 @@ function register() {
             },
             body: JSON.stringify(inputs),
         }).then(() => {
-            alert("Successful registration!")
+            alert("Your registration has been sent!")
             uName.innerHTML = ""
             email.innerHTML = ""
             window.location.href = "./login.html"

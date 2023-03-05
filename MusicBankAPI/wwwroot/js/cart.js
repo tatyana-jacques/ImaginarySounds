@@ -158,7 +158,7 @@ function addLib() {
                     userId: item.userId
                 }
             })
-            const filteredList = list.filter((item) => item.id === uId)
+            const filteredList = list.filter((item) => item.userId === uId)
             const lastItem = filteredList.pop();
             alert(lastItem.id)
             if (lastItem.status == 1) {

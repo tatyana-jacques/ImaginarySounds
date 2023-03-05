@@ -26,26 +26,26 @@ using (var channel = connection.CreateModel())
         var body = ea.Body.ToArray();
         var message = Encoding.UTF8.GetString(body);
         UserSongsViewModel userSongs = JsonConvert.DeserializeObject<UserSongsViewModel>(message);
+
+        var userSongsToList = ctx.UserSongs.ToList();
+        var filteredList = FilterList(userSongsToList, userSongs.UserSongList);
+
         var idUser = 0;
-        foreach (var x in userSongs.UserSongList)
+
+        foreach (var x in filteredList)
         {
             if (idUser == 0)
             {
                 idUser = x.UserId;
             }
 
-            var newEntity = new UserSongs
-            {
-                UserId = x.UserId,
-                SongId = x.SongId
-            };
+            //var newEntity = CreateUserSongs(x.UserId, x.SongId);
 
+            ctx.UserSongs.Add(x
+            );
 
-            ctx.UserSongs.Add(newEntity);
-
-            Console.WriteLine($"{newEntity.SongId}; {newEntity.UserId}");
+            Console.WriteLine($"{x.SongId}; {x.UserId}");
         }
-        //ctx.SaveChangesAsync();
 
         var statusTableToList = ctx.StatusTable.ToList();
         foreach (var x in statusTableToList)
@@ -55,12 +55,10 @@ using (var channel = connection.CreateModel())
         var statusTable = statusTableToList.Last(e => e.UserId == idUser);
         Console.WriteLine("Aqui: " + statusTable.UserId);
         statusTable.Status = 1;
-        //ctx.Entry(statusTable).State = EntityState.Modified;
         ctx.StatusTable.Update(statusTable);
         ctx.SaveChangesAsync();
 
     };
-
 
 
     channel.BasicConsume(queue: "addToLib",
@@ -70,3 +68,42 @@ using (var channel = connection.CreateModel())
     Console.WriteLine(" Press [enter] to exit.");
     Console.ReadLine();
 }
+
+UserSongs CreateUserSongs(int userId, int songId)
+{
+    return new UserSongs
+    {
+        UserId = userId,
+        SongId = songId
+    };
+
+}
+
+List<UserSongs> FilterList(List<UserSongs> contextList, List<UserSongViewModel> cartList)
+{
+    var returnList = new List<UserSongs>();
+
+    foreach (var x in cartList)
+    {
+        bool contains = false;
+        foreach (var y in contextList)
+            if (y.UserId == x.UserId && y.SongId == x.SongId)
+            {
+                contains = true;
+
+            }
+        if (contains == false)
+        {
+            var entity = new UserSongs
+            {
+                UserId = x.UserId,
+                SongId = x.SongId
+
+            };
+            returnList.Add(entity);
+        }
+
+    }
+    return returnList;
+}
+

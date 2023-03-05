@@ -108,11 +108,8 @@ namespace MusicBankAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<UserSongListViewModel>> PostUserSongs(UserSongListViewModel userSongListViewModel)
         {
-
             try
             {
-
-
                 using (var connection = factory.CreateConnection())
                 using (var channel = connection.CreateModel())
                 {
@@ -129,46 +126,6 @@ namespace MusicBankAPI.Controllers
                                     basicProperties: null,
                                     body: userBytes);
                 }
-
-                // foreach (var x in userSongListViewModel.UserSongList)
-                // {
-                //     var userSong = new UserSongs
-                //     {
-                //         UserId = x.UserId,
-                //         SongId = x.SongId,
-                //     };
-
-                //     using (var connection = factory.CreateConnection())
-                //     using (var channel = connection.CreateModel())
-                //     {
-                //         channel.QueueDeclare(queue: "addToLib",
-                //             durable: true,
-                //             exclusive: false,
-                //             autoDelete: false,
-                //             arguments: null);
-
-                //         var body = JsonConvert.SerializeObject(userSong);
-                //         var userBytes = Encoding.UTF8.GetBytes(body);
-                //         channel.BasicPublish(exchange: "",
-                //                         routingKey: "addToLib",
-                //                         basicProperties: null,
-                //                         body: userBytes);
-                //     }
-
-
-
-
-
-
-                //_context.UserSongs.Add(userSong);
-
-
-
-                //}
-
-
-
-                //await _context.SaveChangesAsync();
 
                 return Ok();
 
@@ -200,7 +157,6 @@ namespace MusicBankAPI.Controllers
 
             return NoContent();
         }
-
 
     }
 }

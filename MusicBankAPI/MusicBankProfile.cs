@@ -14,7 +14,7 @@ namespace MusicBankAPI
             CreateMap<SongTagsViewModel,SongTags>();
             CreateMap<TagViewModel,Tag>();
             CreateMap<UserViewModel,User>();
-            CreateMap<UserSongsViewModel,UserSongs>();
+            CreateMap<UserSongViewModel,UserSongs>();
         }
     }
 }

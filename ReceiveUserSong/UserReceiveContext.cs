@@ -6,17 +6,16 @@ using Microsoft.EntityFrameworkCore;
 using MusicBankAPI.Models;
 using Process;
 
-namespace Process
+namespace Receive
 {
-    public class ProcessContext : DbContext
-
+    public class UserReceiveContext : DbContext
     {
         public DbSet<UserSongs> UserSongs { get; set; }
         public DbSet<StatusTable> StatusTable { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-       => options.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=MusikBank;Trusted_Connection=True;persist security info=True;");
 
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        => options.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=MusicBank;Trusted_Connection=True;persist security info=True;");
 
     }
 }

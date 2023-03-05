@@ -1,23 +1,21 @@
-﻿
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicBankAPI.Context;
 using MusicBankAPI.Models;
 using MusicBankAPI.ViewModels;
 using RabbitMQ.Client;
-using AutoMapper;
 using Newtonsoft.Json;
 using System.Text;
 
 namespace MusicBankAPI.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class UserSongsController : ControllerBase
     {
         private readonly MusicBankContext _context;
         private readonly IMapper _mapper;
-
         private ConnectionFactory factory;
 
         public UserSongsController(MusicBankContext context, IMapper mapper)
@@ -33,7 +31,7 @@ namespace MusicBankAPI.Controllers
             };
         }
 
-
+        // GET: api/UserSongs
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserSongs>>> GetUserSongs()
         {
@@ -44,22 +42,10 @@ namespace MusicBankAPI.Controllers
             return await _context.UserSongs
                 .Include(x => x.User)
                 .Include(x => x.Song)
-                .Include(x => x.Song.Artist)
-                .Include(x => x.Song.Composer)
                 .ToListAsync();
         }
 
-        [HttpGet]
-        public ActionResult<int> GetStatusByUserId(int userId)
-        {
-            if (_context.UserSongs == null)
-            {
-                return NotFound();
-            }
-            return _context.StatusTable.Last(e => e.UserId == userId).Status;
-        }
-
-
+        // GET: api/UserSongs/5
         [HttpGet("{id}")]
         public async Task<ActionResult<UserSongs>> GetUserSongs(int id)
         {
@@ -70,8 +56,6 @@ namespace MusicBankAPI.Controllers
             var userSongs = await _context.UserSongs
                 .Include(x => x.User)
                 .Include(x => x.Song)
-                .Include(x => x.Song.Artist)
-                .Include(x => x.Song.Composer)
                 .Where(y => y.Id == id).FirstOrDefaultAsync();
 
             if (userSongs == null)
@@ -82,7 +66,8 @@ namespace MusicBankAPI.Controllers
             return userSongs;
         }
 
-
+        // PUT: api/UserSongs/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<ActionResult<UserSongViewModel>> PutUserSongs(int id, UserSongViewModel userSongViewModel)
         {
@@ -93,21 +78,21 @@ namespace MusicBankAPI.Controllers
                 UserSongs userSong = userSongsList.Where(y => y.Id == id).FirstOrDefault();
                 if (userSong is null)
                 {
-                    return NotFound("This user does not own this asset."); ;
+                    return NotFound("Song not found."); ;
                 }
                 foreach (var x in userSongsList)
                 {
-                    if (x.SongId == userSongViewModel.SongId && x.UserId == userSongViewModel.UserId)
+                    if (x.SongId == userSongViewModel.SongId && x.UserId == userSongViewModel.SongId)
                     {
-                        return Conflict("This register already exists!");
+                        return Conflict("This user already has this song!");
                     }
                 }
-                userSong.SongId = userSongViewModel.SongId;
                 userSong.UserId = userSongViewModel.UserId;
+                userSong.SongId = userSongViewModel.SongId;
 
 
                 _context.Entry(userSong).State = EntityState.Modified;
-                // _context.UserSongs.Update(userSong);
+                _context.UserSongs.Update(userSong);
                 await _context.SaveChangesAsync();
 
                 return userSongViewModel;
@@ -116,52 +101,76 @@ namespace MusicBankAPI.Controllers
             {
                 return BadRequest("Problem!");
             }
-
         }
 
-
+        // POST: api/UserSongs
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<UserSongsViewModel>> PostUserSongs(UserSongsViewModel userSongViewModel)
+        public async Task<ActionResult<UserSongListViewModel>> PostUserSongs(UserSongListViewModel userSongListViewModel)
         {
+
             try
             {
 
-                //var userSongList = await _context.UserSongs.ToListAsync();
-                // foreach (var x in userSongList)
+
+                using (var connection = factory.CreateConnection())
+                using (var channel = connection.CreateModel())
+                {
+                    channel.QueueDeclare(queue: "addToLib",
+                        durable: true,
+                        exclusive: false,
+                        autoDelete: false,
+                        arguments: null);
+
+                    var body = JsonConvert.SerializeObject(userSongListViewModel);
+                    var userBytes = Encoding.UTF8.GetBytes(body);
+                    channel.BasicPublish(exchange: "",
+                                    routingKey: "addToLib",
+                                    basicProperties: null,
+                                    body: userBytes);
+                }
+
+                // foreach (var x in userSongListViewModel.UserSongList)
                 // {
-                //     if (x.SongId == userSongViewModel.SongId && x.UserId == userSongViewModel.UserId)
+                //     var userSong = new UserSongs
                 //     {
-                //         return Conflict("This register already exists!");
+                //         UserId = x.UserId,
+                //         SongId = x.SongId,
+                //     };
+
+                //     using (var connection = factory.CreateConnection())
+                //     using (var channel = connection.CreateModel())
+                //     {
+                //         channel.QueueDeclare(queue: "addToLib",
+                //             durable: true,
+                //             exclusive: false,
+                //             autoDelete: false,
+                //             arguments: null);
+
+                //         var body = JsonConvert.SerializeObject(userSong);
+                //         var userBytes = Encoding.UTF8.GetBytes(body);
+                //         channel.BasicPublish(exchange: "",
+                //                         routingKey: "addToLib",
+                //                         basicProperties: null,
+                //                         body: userBytes);
                 //     }
-                // }
-
-                using var connection = factory.CreateConnection();
-                using var channel = connection.CreateModel();
-
-                channel.QueueDeclare(queue: "addToLib",
-                    durable: true,
-                    exclusive: false,
-                    autoDelete: false,
-                    arguments: null);
-
-                var body = JsonConvert.SerializeObject(userSongViewModel);
-                var songBytes = Encoding.UTF8.GetBytes(body);
-                channel.BasicPublish(exchange: "",
-                                routingKey: "addToLib",
-                                basicProperties: null,
-                                body: songBytes);
 
 
-                // _context.UserSongs.Add(userSong);
-                // await _context.SaveChangesAsync();
 
-                // var status = new StatusTable
-                // {
-                //     UserId = userSongViewModel.UserSongList.First().UserId,
-                //     Status = 0
-                // };
 
-                return Ok(userSongViewModel);
+
+
+                //_context.UserSongs.Add(userSong);
+
+
+
+                //}
+
+
+
+                //await _context.SaveChangesAsync();
+
+                return Ok();
 
             }
 
@@ -169,9 +178,10 @@ namespace MusicBankAPI.Controllers
             {
                 return BadRequest("Invalid data.");
             }
+
         }
 
-
+        // DELETE: api/UserSongs/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserSongs(int id)
         {
@@ -190,6 +200,7 @@ namespace MusicBankAPI.Controllers
 
             return NoContent();
         }
+
 
     }
 }

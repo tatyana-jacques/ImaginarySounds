@@ -5,6 +5,7 @@ using System;
 using Newtonsoft.Json;
 using System.Text;
 using Process;
+using MusicBankAPI.Models;
 
 var factory = new ConnectionFactory()
 {
@@ -13,58 +14,75 @@ var factory = new ConnectionFactory()
     Password = "learningRabbitMQ"
 };
 
-using var connection = factory.CreateConnection();
-using var channel = connection.CreateModel();
-
-channel.QueueDeclare(queue: "addToLib",
-                           durable: true,
-                           exclusive: false,
-                           autoDelete: false,
-                           arguments: null);
-
-var consumer = new EventingBasicConsumer(channel);
-
-consumer.Received += (model, ea) =>
+using (var ctx = new ProcessContext())
+using (var connection = factory.CreateConnection())
+using (var channel = connection.CreateModel())
 {
-    var body = ea.Body.ToArray();
-    var message = Encoding.UTF8.GetString(body);
-    UserSongsViewModel userSongs = JsonConvert.DeserializeObject<UserSongsViewModel>(message);
-    Console.WriteLine("Hi");
-    SaveUserSongs(userSongs);
-
-};
 
 
-channel.BasicConsume(queue: "addToLib",
-                        autoAck: true,
-                        consumer: consumer);
+    var consumer = new EventingBasicConsumer(channel);
 
-
-async Task SaveUserSongs(UserSongsViewModel userSongs)
-{
-    using var ctx = new ProcessContext();
-    var idUser = 0;
-    foreach (var x in userSongs.UserSongList)
+    consumer.Received += (model, ea) =>
     {
-        if (idUser == 0)
-        {
-            idUser = x.UserId;
-        }
-        var newEntity = new UserSongs
-        {
-            UserId = x.UserId,
-            SongId = x.SongId
-        };
-        Console.WriteLine("Hey " + newEntity.UserId + " " + newEntity.SongId + " " + idUser);
+        var body = ea.Body.ToArray();
+        var message = Encoding.UTF8.GetString(body);
+        UserSongs userSongs = JsonConvert.DeserializeObject<UserSongs>(message);
+        ctx.UserSongs.Add(userSongs);
 
-        ctx.UserSongs.Add(newEntity);
-        await ctx.SaveChangesAsync();
-    }
+        // foreach (var x in userSongs.UserSongList)
+        // {
+        //     // if (idUser == 0)
+        //     // {
+        //     //     idUser = x.UserId;
+        //     // }
+        //     var newEntity = new UserSongs
+        //     {
+        //         UserId = x.UserId,
+        //         SongId = x.SongId
+        //     };
 
-    var statusTable = ctx.StatusTable.Last(e => e.UserId == idUser);
-    statusTable.Status = 1;
-    ctx.Entry(statusTable).State = EntityState.Modified;
 
+        //     ctx.UserSongs.Add(newEntity);
+        // }
+
+        ctx.SaveChangesAsync();
+
+        Console.WriteLine(userSongs.UserId);
+
+    };
+
+
+    channel.BasicConsume(queue: "addToLib",
+                            autoAck: true,
+                            consumer: consumer);
+
+    Console.WriteLine(" Press [enter] to exit.");
+    Console.ReadLine();
+    // async Task SaveUserSongs(UserSongsViewModel userSongs)
+    // {
+
+    //     var idUser = 0;
+    //     foreach (var x in userSongs.UserSongList)
+    //     {
+    //         if (idUser == 0)
+    //         {
+    //             idUser = x.UserId;
+    //         }
+    //         var newEntity = new UserSongs
+    //         {
+    //             UserId = x.UserId,
+    //             SongId = x.SongId
+    //         };
+    //         Console.WriteLine("Hey " + newEntity.UserId + " " + newEntity.SongId + " " + idUser);
+
+    //         ctx.UserSongs.Add(newEntity);
+    //         await ctx.SaveChangesAsync();
+    //     }
+
+    //     var statusTable = ctx.StatusTable.Last(e => e.UserId == idUser);
+    //     statusTable.Status = 1;
+    //     ctx.Entry(statusTable).State = EntityState.Modified;
+
+    //}
 }
-
 

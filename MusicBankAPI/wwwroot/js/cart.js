@@ -7,7 +7,6 @@ redirectCart.addEventListener("click", () => {
     const cartString = JSON.stringify(cart)
     localStorage.setItem("shoppingCart", cartString)
     window.location.href = "./index.html"
-
 })
 
 
@@ -61,6 +60,26 @@ function RemoveCard(indice) {
 }
 
 function addLib() {
+
+    const status = {
+        "status": 0,
+        "userId": uId,
+    }
+    fetch("http://localhost:5276/api/StatusTables",
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(status),
+        }).then(() => {
+
+
+        })
+        .catch(() => alert("Error"))
+
+
+
     const list = cart.map((item) => {
         return {
 
@@ -69,7 +88,7 @@ function addLib() {
         }
     })
 
-    fetch("http://localhost:5276/api/UserSongs/PostUserSongs",
+    fetch("http://localhost:5276/api/UserSongs",
         {
             method: 'POST',
             headers: {
@@ -80,27 +99,88 @@ function addLib() {
             }),
         }).then(() => {
 
-            const identifier = setInterval(async () => {
-                let finishProcess = false
-                const toJson = await fetch("http://localhost:5276/api/UserSongs/GetStatusByUserId?userId=" + uId)
-                const dado = await toJson.json()
-                if (dado == 1) {
-                    alert("Seus dados estão na biblioteca.")
-                    finishProcess = true
-                }
+            // const identifier = setInterval(async () => {
+            //     let finishProcess = false
+            //     const toJson = await fetch("http://localhost:5276/api/UserSongs?Id=uID")
+            //     alert(toJson.Id)
+            //     const dado = await toJson.json()
+            //     if (dado == 1) {
+            //         alert("New items added to your library!")
+            //         finishProcess = true
+            //     }
 
-                if (finishProcess === true) {
-                    clearInterval(identifier)
-                }
-            }, 1000)
+            //     if (finishProcess === true) {
+            //         clearInterval(identifier)
+            //     }
+            // }, 100000)
+            //     setInterval(() => {
+            //         fetch('http://localhost:5276/api/UserSongs')
+            //             .then(response => response.json())
+            //             .then(data => {
+            //                 //let finishProcess = false
+            //                 const list = data.map(item => {
+            //                     return {
+            //                         id: item.id,
+            //                         status: item.Status,
+            //                         useId: item.UserId,
+            //                     }
+            //                 })
+            //                 const filteredList = list.filter((item, index) => {
+            //                     return index === list.findIndex(obj => {
+            //                         return obj.UserId === item.UserId;
+            //                     })
+            //                 });
+            //                 const lastItem = filteredList.pop();
+            //                 alert(lastItem.Status)
+            //                 if (lastItem.Status == 1) {
 
+            //                     clearInterval(identifier)
+            //                 }
+
+
+            //             }, 60000)
+            //     })
+            // })
         })
         .catch(() => alert("Error :("))
+
+
+
+
+    fetch("http://localhost:5276/api/StatusTables")
+        .then(response => response.json())
+        .then(data => {
+            //let finishProcess = false
+            const list = data.map(item => {
+                return {
+                    id: item.id,
+                    status: item.status,
+                    userId: item.userId
+                }
+            })
+            const filteredList = list.filter((item) => item.id === uId)
+            const lastItem = filteredList.pop();
+            alert(lastItem.id)
+            if (lastItem.status == 1) {
+
+                //clearInterval(identifier)
+            }
+
+        })
+        .catch(error => {
+            alert(error)
+        })
+
+
+
+
+
 
 
     cart = []
     card.innerHTML = " "
     const cartString = JSON.stringify(cart)
     localStorage.setItem("shoppingCart", cartString)
-
 }
+
+

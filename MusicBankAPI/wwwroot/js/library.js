@@ -19,7 +19,7 @@ getAudios()
 
 
 function getAudios() {
-    fetch("http://localhost:5276/api/UserSongs/GetUserSongs?userId=uId")
+    fetch("http://localhost:5276/api/UserSongs?userId=uId")
         .then(e => e.json())
         .then(data => {
             const list = data.map(item => {

@@ -37,7 +37,7 @@
 <img src = "./MusicBankAPI/wwwroot/Images/library_page.png" width = 300px/><img>
 </br>
 </br>
-<spam>Copyright: As músicas incluídas nesse projeto não estão licenciadas enquanto Creative Commons e possuem direitos autorais. Podem ser utilizadas apenas para fins de estudo ou consumo individual. Não podem ser difundidas ou comercializadas.</spam>
+<h3>Copyright: As músicas incluídas nesse projeto não estão licenciadas enquanto Creative Commons e possuem direitos autorais. Podem ser utilizadas apenas para fins de estudo ou consumo individual. Não podem ser difundidas ou comercializadas.</h3>
 </br>
 </br>
 

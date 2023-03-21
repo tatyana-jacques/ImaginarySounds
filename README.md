@@ -18,23 +18,23 @@
 <br>
 <h3>Index</h3>
 <p>Na página inicial, é feita uma requisição para o banco de dados que permite a listagem dos áudios disponíveis para adição ao carrinho. Apenas é possível a navegação para as páginas de carrinho e biblioteca se o usuários estiver logado. Para isso, foi desenvolvido no front uma função para validar o nome do usuário que, futuramente, será substituída por um sistema seguro de autenticação. Provavelmente, Razor Page. Na página inicial, assim como na biblioteca também é possível executar e parar o áudio.</p>
-<img src = "./MusicBankAPI/wwwroot/Images/initial_page.png" width = 500px/><img>
+<img src = "./MusicBankAPI/wwwroot/Images/initial_page.png" width = 600px/><img>
 </br>
 <h3>Register</h3>
 <p>Na página de registro, os dados do usuário são encaminhados para uma fila em RabitMQ.</p>
-<img src = "./MusicBankAPI/wwwroot/Images/register_page.png" width = 500px/><img>
+<img src = "./MusicBankAPI/wwwroot/Images/register_page.png" width = 600px/><img>
 </br>
 <h3>Login</h3>
 <p>Após o registro, o usuário é encaminhado para a página de login.</p>
-<img src = "./MusicBankAPI/wwwroot/Images/login_page.png" width = 500px/><img>
+<img src = "./MusicBankAPI/wwwroot/Images/login_page.png" width = 600px/><img>
 </br>
 <h3>Cart</h3>
 <p>Uma vez logado, o usuário pode acessar seu carrinho e adicionar itens a sua biblioteca. A adição de itens à biblioteca também ocorre por meio de uma fila em RabbitMQ. Após a adição dos itens ao banco de dados é retornado um alerta para o usuário. Para o projeto consumidor da fila referente à adição dos itens do carrinho de compras no banco de dados, foram desenvolvidos testes unitários.</p>
-<img src = "./MusicBankAPI/wwwroot/Images/cart_page.png" width = 500px/><img>
+<img src = "./MusicBankAPI/wwwroot/Images/cart_page.png" width = 600px/><img>
 </br>
 <h3>Library</h3>
 <p>Na página de biblioteca, o usuário pode fazer o download de seus áudios.</p>
-<img src = "./MusicBankAPI/wwwroot/Images/library_page.png" width = 500px/><img>
+<img src = "./MusicBankAPI/wwwroot/Images/library_page.png" width = 600px/><img>
 </br>
 </br>
 <h3>Copyright: As músicas incluídas nesse projeto não estão licenciadas enquanto Creative Commons e possuem direitos autorais. Podem ser utilizadas apenas para fins de estudo ou consumo individual. Não podem ser difundidas ou comercializadas.</h3>
@@ -42,9 +42,9 @@
 </br>
 
 <h2>Modelo lógico do Banco de Dados</h2>
-<img src = "./MusicBankAPI/wwwroot/Images/logico_imaginary_sounds.png" width = 500px/><img>
+<img src = "./MusicBankAPI/wwwroot/Images/logico_imaginary_sounds.png" width = 600px/><img>
 </br>
 </br>
 
 <h2>Representação do Sistema</h2>
-<img src = "./MusicBankAPI/wwwroot/Images/sistema.png" width = 500px/><img>
+<img src = "./MusicBankAPI/wwwroot/Images/sistema.png" width = 600px/><img>
